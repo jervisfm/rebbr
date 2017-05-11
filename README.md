@@ -104,4 +104,11 @@ But the BBR VM create command is still failing. It cannot find the VM image:
 ```
 ERROR: (gcloud.compute.instances.create) Could not fetch resource:
  - Invalid value for field 'resource.disks[0].initializeParams.sourceImage': 'https://www.googleapis.com/compute/v1/projects/extreme-braid-167301/global/images//ubuntu-os-cloud/ubuntu-1604-xenial-v20160922'. The URL is malformed.
+```a
+
+Created minimal failing cli command test case:
+```
+$ gcloud compute  instances create "bbrtest1"   --image "/ubuntu-os-cloud/ubuntu-1604-xenial-v20160922"
+ERROR: (gcloud.compute.instances.create) Could not fetch resource:
+ - Invalid value for field 'resource.disks[0].initializeParams.sourceImage': 'https://www.googleapis.com/compute/v1/projects/extreme-braid-167301/global/images//ubuntu-os-cloud/ubuntu-1604-xenial-v20160922'. The URL is malformed.
 ```
