@@ -120,3 +120,10 @@ and you're now supposed to use the --image-project to specify which project imag
 ```
 gcloud compute   instances create "bbrtest1"   --image "ubuntu-1604-xenial-v20170502"   --image-project "ubuntu-os-cloud"
 ```
+
+Apply this to the BBR Create VM Command, we progress further but encouter another error:
+
+```
+ERROR: (gcloud.compute.instances.create) Could not fetch resource:
+ - Required 'compute.networks.use' permission for 'projects/make-tcp-fast/global/networks/default'
+```
