@@ -92,3 +92,8 @@ $ gcloud config set project extreme-braid-167301
 ```
 
 This is a bit wierd since the project ids are machine generated and don't have memorable names.
+
+Next up, you need to enable Billing to do actual sort of action. You can use the Education credit available here: https://goo.gl/gcpedu/omXu3b as
+a Billing source. 
+
+With that, can create an Instance following GCloud example command.
