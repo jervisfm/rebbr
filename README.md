@@ -66,3 +66,13 @@ ubuntu-1704-zesty-v20170413                       ubuntu-os-cloud    ubuntu-1704
 ```
 
 However, even using ubuntu-1604-xenial-v20170502 still errors out.
+
+Ah, I tried running the example command on the doc and even that errors out still:
+```
+gcloud compute instances create example-instance \
+      --image-family rhel-7 --image-project rhel-cloud \
+      --zone us-central1-a
+- Failed to find project google-bbr
+```
+
+So, it looks like project setup failed.
