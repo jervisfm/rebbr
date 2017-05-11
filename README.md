@@ -112,3 +112,11 @@ $ gcloud compute  instances create "bbrtest1"   --image "/ubuntu-os-cloud/ubuntu
 ERROR: (gcloud.compute.instances.create) Could not fetch resource:
  - Invalid value for field 'resource.disks[0].initializeParams.sourceImage': 'https://www.googleapis.com/compute/v1/projects/extreme-braid-167301/global/images//ubuntu-os-cloud/ubuntu-1604-xenial-v20160922'. The URL is malformed.
 ```
+
+
+Iterating on that simpler example, I found new magic incantation to create a VM instance. It looks like the syntax might have changed
+and you're now supposed to use the --image-project to specify which project image is from.
+
+```
+gcloud compute   instances create "bbrtest1"   --image "ubuntu-1604-xenial-v20170502"   --image-project "ubuntu-os-cloud"
+```
