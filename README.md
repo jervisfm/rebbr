@@ -29,3 +29,24 @@ The highlevel approach is:
 ## Step 1: VM Setup
 
 For this part, we'll follow the guide published by Google here: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md
+
+### Appendix Notes:
+
+Executing vanilla gcloud compute after install Gcloud SDK command results in an error:
+```
+gcloud compute \
+>   instances create "bbrtest1" \
+>   --project ${PROJECT} --zone ${ZONE} \
+>   --machine-type "n1-standard-8" \
+>   --network "default" \
+>   --maintenance-policy "MIGRATE" \
+>   --boot-disk-type "pd-standard" \
+>   --boot-disk-device-name "bbrtest1" \
+>   --image "/ubuntu-os-cloud/ubuntu-1604-xenial-v20160922" \
+>   --boot-disk-size "20" \
+>   --scopes default="https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring.write","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly"
+WARNING: You have selected a disk size of under [200GB]. This may result in poor I/O performance. For more information, see: https://developers.google.com/compute/docs/disks#pdperformance.
+WARNING: Flag format --scopes [ACCOUNT=]SCOPE, [[ACCOUNT=]SCOPE, ...] is deprecated and will be removed 24th Jan 2018. Use --scopes SCOPE[, SCOPE...] --service-account ACCOUNT instead.
+ERROR: (gcloud.compute.instances.create) Could not fetch resource:
+ - Invalid value for field 'resource.disks[0].initializeParams.sourceImage': 'https://www.googleapis.com/compute/v1/projects/make-tcp-fast/global/images//ubuntu-os-cloud/ubuntu-1604-xenial-v20160922'. The URL is malformed.
+```
