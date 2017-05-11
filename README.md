@@ -28,7 +28,51 @@ The highlevel approach is:
 
 ## Step 1: VM Setup
 
-For this part, we'll follow the guide published by Google here: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md
+For this part, we'll use the guide published by Google here: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md
+as a start.
+
+Prerequisites:
+* GCloud SDK: https://cloud.google.com/sdk/downloads
+* Cloud Account with Billing enabled.
+
+Initialize the GCloud SDK if this is the first time installing it. This will authenticate
+your google account and set default project/zone.
+```
+$ gcloud init 
+```
+
+Visit http://cloud.google.com and create a new project to run the experiment in. 
+# TODO(jmuindi): Figure out what the matching CLI syntax is for project creation automation.
+
+
+After successful project creation, you can list available projects like so:
+
+```
+$ gcloud projects list
+PROJECT_ID            NAME        PROJECT_NUMBER
+extreme-braid-167301  google-bbr  142604555723
+```
+
+Then set the defaults for PROJECT and ZONE like so:
+
+```
+$ typeset -x PROJECT="<USE_YOUR_PROJECT_ID>"
+$ typeset -x ZONE="us-west1-a"
+```
+
+Then Create the VM Instance:
+
+```bash
+$ gcloud compute   instances create "bbrtest1"   --project ${PROJECT} --zone ${ZONE}   --machine-type "n1-standard-8"   --network "default"   --maintenance-policy "MIGRATE"   --boot-disk-type "pd-standard"   --boot-disk-device-name "bbrtest1"   --image-project "ubuntu-os-cloud" --image "ubuntu-1604-xenial-v20160922"   --boot-disk-size "20"   --scopes default="https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring.write","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly"
+```
+
+You can ignore warning about poor I/O performance.. Upon success, you should see:
+```
+Created [https://www.googleapis.com/compute/v1/projects/extreme-braid-167301/zones/us-west1-a/instances/bbrtest1].
+NAME      ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+bbrtest1  us-west1-a  n1-standard-8               X.X.X.X        X.X.X.X       RUNNING
+```
+
 
 ### Running Appendix Notes:
 
