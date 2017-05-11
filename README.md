@@ -127,3 +127,13 @@ Apply this to the BBR Create VM Command, we progress further but encouter anothe
 ERROR: (gcloud.compute.instances.create) Could not fetch resource:
  - Required 'compute.networks.use' permission for 'projects/make-tcp-fast/global/networks/default'
 ```
+
+Ah, the permission errors is because of referencing the wrong project. So either remove --project from argument list or
+make sure that ```${PROJECT}``` refers to a valid GCloud Project ID. Note this is the ID and _not_ the name. With that,
+was able to stand up a VM. 
+
+I will note a useful command for deleting the created VM is:
+
+```
+$ gcloud compute   instances delete "bbrtest1"
+```
