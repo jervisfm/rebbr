@@ -30,7 +30,7 @@ The highlevel approach is:
 
 For this part, we'll follow the guide published by Google here: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md
 
-### Appendix Notes:
+### Running Appendix Notes:
 
 Executing vanilla gcloud compute after install Gcloud SDK command results in an error:
 ```
@@ -50,3 +50,19 @@ WARNING: Flag format --scopes [ACCOUNT=]SCOPE, [[ACCOUNT=]SCOPE, ...] is depreca
 ERROR: (gcloud.compute.instances.create) Could not fetch resource:
  - Invalid value for field 'resource.disks[0].initializeParams.sourceImage': 'https://www.googleapis.com/compute/v1/projects/make-tcp-fast/global/images//ubuntu-os-cloud/ubuntu-1604-xenial-v20160922'. The URL is malformed.
 ```
+
+From docs here: https://cloud.google.com/sdk/gcloud/reference/compute/instances/create, it says we can find available names with:
+
+```
+$ gcloud compute images list
+```
+
+Available ubuntu images are:
+```
+ubuntu-1404-trusty-v20170505                      ubuntu-os-cloud    ubuntu-1404-lts                       READY
+ubuntu-1604-xenial-v20170502                      ubuntu-os-cloud    ubuntu-1604-lts                       READY
+ubuntu-1610-yakkety-v20170502                     ubuntu-os-cloud    ubuntu-1610                           READY
+ubuntu-1704-zesty-v20170413                       ubuntu-os-cloud    ubuntu-1704                           READY
+```
+
+However, even using ubuntu-1604-xenial-v20170502 still errors out.
