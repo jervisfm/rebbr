@@ -42,7 +42,7 @@ $ gcloud init
 ```
 
 Visit http://cloud.google.com and create a new project to run the experiment in. 
-# TODO(jmuindi): Figure out what the matching CLI syntax is for project creation automation.
+TODO(jmuindi): Figure out what the matching CLI syntax is for project creation automation.
 
 
 After successful project creation, you can list available projects like so:
