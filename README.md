@@ -26,4 +26,6 @@ The highlevel approach is:
 3) Use LinkShell and DelayShells to simulate differing amount of losses.
 
 
+## Step 1: VM Setup
 
+For this part, we'll follow the guide published by Google here: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md
