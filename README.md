@@ -15,3 +15,15 @@ when compared to [CUBIC](https://en.wikipedia.org/wiki/CUBIC_TCP). This figure i
 
 
 ![bbr_figure8](bbr_fig8.png "BBR Figure 8")
+
+
+# Setup
+
+The highlevel approach is:
+
+1) Setup a Virtual Machine with BBR enabled.
+2) Install Mahimahi Emulations tools
+3) Use LinkShell and DelayShells to simulate differing amount of losses.
+
+
+
