@@ -76,3 +76,19 @@ gcloud compute instances create example-instance \
 ```
 
 So, it looks like project setup failed.
+
+Ah, the problem looks to be a difference between project ID and project name. Create a project on the web (http://console.google.com)
+and list available project like so:
+
+```
+$ gcloud projects list
+PROJECT_ID            NAME        PROJECT_NUMBER
+extreme-braid-167301  google-bbr  142604555723
+```
+
+Then Update your local project config:
+```
+$ gcloud config set project extreme-braid-167301
+```
+
+This is a bit wierd since the project ids are machine generated and don't have memorable names.
