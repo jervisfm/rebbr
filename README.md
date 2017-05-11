@@ -73,6 +73,16 @@ NAME      ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     S
 bbrtest1  us-west1-a  n1-standard-8               X.X.X.X        X.X.X.X       RUNNING
 ```
 
+Login into the VM
+```
+$ gcloud compute ssh --project ${PROJECT} --zone ${ZONE} bbrtest1
+$ sudo apt-get update
+$ sudo apt-get build-dep linux
+$ sudo apt-get upgrade
+```
+
+From here on out, you can safely follow instructions from: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md#obtain-kernel-sources-with-tcp-bbr
+
 
 ### Running Appendix Notes:
 
