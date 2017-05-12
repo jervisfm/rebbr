@@ -1,0 +1,75 @@
+%%%% Proceedings format for most of ACM conferences (with the exceptions listed below) and all ICPS volumes.
+\documentclass[sigconf]{acmart}
+%%%% As of March 2017, [siggraph] is no longer used. Please use sigconf (above) for SIGGRAPH conferences.
+\settopmatter{printacmref=false} % Removes citation information below abstract
+\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+\pagestyle{plain} % removes running headers
+
+%%%% Proceedings format for SIGPLAN conferences
+% \documentclass[sigplan, anonymous, review]{acmart}
+
+%%%% Proceedings format for SIGCHI conferences
+% \documentclass[sigchi, review]{acmart}
+
+%%%% To use the SIGCHI extended abstract template, please visit
+% https://www.overleaf.com/read/zzzfqvkmrfzn
+
+\usepackage{booktabs} % For formal tables
+
+% Copyright
+% \setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+% \setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+
+\begin{document}
+\title{Reproducing BBR}
+\subtitle{Extended Abstract}
+
+\author{Luke Hsiao}
+\affiliation{%
+  \institution{Stanford University}}
+\email{lwhsiao@stanford.edu}
+
+\author{Jervis Muindi}
+\affiliation{%
+  \institution{Stanford University}}
+\email{jmuindi@stanford.edu}
+
+
+
+% The default list of authors is too long for headers}
+\renewcommand{\shortauthors}{B. Trovato et al.}
+
+
+\begin{abstract}
+This paper provides a sample of a \LaTeX\ document which conforms,
+somewhat loosely, to the formatting guidelines for
+ACM SIG Proceedings.
+\end{abstract}
+
+
+% \keywords{ACM proceedings, \LaTeX, text tagging}
+
+%% Used in some conference proceedings e.g. sigplan and sigchi
+% \begin{teaserfigure}
+%   \includegraphics[width=\textwidth]{sampleteaser}
+%   \caption{This is a teaser}
+%   \label{fig:teaser}
+% \end{teaserfigure}
+
+\maketitle
+
+\input{tex/intro}
+
+
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}
