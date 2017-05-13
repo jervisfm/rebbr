@@ -5,31 +5,29 @@
 \renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
 \pagestyle{plain} % removes running headers
 
-%%%% Proceedings format for SIGPLAN conferences
-% \documentclass[sigplan, anonymous, review]{acmart}
-
-%%%% Proceedings format for SIGCHI conferences
-% \documentclass[sigchi, review]{acmart}
-
-%%%% To use the SIGCHI extended abstract template, please visit
-% https://www.overleaf.com/read/zzzfqvkmrfzn
 
 \usepackage{booktabs} % For formal tables
 
-% Copyright
-% \setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-% \setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
+
+\newcommand{\luke}[1]{{\color{blue} #1}}
+\newcommand{\para}[1]{\vspace{0.08in}\noindent\textbf{#1 }}
+
+% Squished list environment to save space
+\newcommand{\squishlist}{
+ \begin{list}{$\bullet$}
+  { \setlength{\itemsep}{0pt}
+    \setlength{\parsep}{2pt}
+    \setlength{\topsep}{2pt}
+    \setlength{\partopsep}{0pt}
+    % \setlength{\labelwidth}{1em}
+  }
+}
+\newcommand{\squishend}{\end{list}}
 
 
 \begin{document}
-\title{Reproducing BBR}
-\subtitle{Extended Abstract}
+\title{ReBBR: Reproducing BBR Evaluation Results}
+% \subtitle{Extended Abstract}
 
 \author{Luke Hsiao}
 \affiliation{%
@@ -40,11 +38,6 @@
 \affiliation{%
   \institution{Stanford University}}
 \email{jmuindi@stanford.edu}
-
-
-
-% The default list of authors is too long for headers}
-\renewcommand{\shortauthors}{B. Trovato et al.}
 
 
 \begin{abstract}
@@ -66,6 +59,8 @@ ACM SIG Proceedings.
 \maketitle
 
 \input{tex/intro}
+\input{tex/eval}
+\input{tex/plans}
 
 
 
