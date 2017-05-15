@@ -1,5 +1,5 @@
 
-TIME = 60  # time in seconds
+TIME = 20  # time in seconds
 
 
 def generate_100mpbs_trace(seconds):
