@@ -14,7 +14,7 @@ The figure we are interested in reproducing is Figure 8 that shows BBR performan
 when compared to [CUBIC](https://en.wikipedia.org/wiki/CUBIC_TCP). This figure is shown below:
 
 
-![bbr_figure8](bbr_fig8.png "BBR Figure 8")
+![bbr_figure8](report/img/bbr_fig8.png "BBR Figure 8")
 
 
 # Setup
@@ -38,10 +38,10 @@ Prerequisites:
 Initialize the GCloud SDK if this is the first time installing it. This will authenticate
 your google account and set default project/zone.
 ```
-$ gcloud init 
+$ gcloud init
 ```
 
-Visit http://cloud.google.com and create a new project to run the experiment in. 
+Visit http://cloud.google.com and create a new project to run the experiment in.
 TODO(jmuindi): Figure out what the matching CLI syntax is for project creation automation.
 
 
@@ -148,7 +148,7 @@ $ gcloud config set project extreme-braid-167301
 This is a bit wierd since the project ids are machine generated and don't have memorable names.
 
 Next up, you need to enable Billing to do actual sort of action. You can use the Education credit available here: https://goo.gl/gcpedu/omXu3b as
-a Billing source. 
+a Billing source.
 
 With that, can create an Instance following GCloud example command.
 
@@ -184,7 +184,7 @@ ERROR: (gcloud.compute.instances.create) Could not fetch resource:
 
 Ah, the permission errors is because of referencing the wrong project. So either remove --project from argument list or
 make sure that ```${PROJECT}``` refers to a valid GCloud Project ID. Note this is the ID and _not_ the name. With that,
-was able to stand up a VM. 
+was able to stand up a VM.
 
 I will note a useful command for deleting the created VM is:
 
