@@ -2,7 +2,6 @@
 *~
 .idea/
 node_modules/
-*.png
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
