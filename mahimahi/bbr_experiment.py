@@ -15,7 +15,6 @@ import argparse
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
 import Queue
 import subprocess
-import sys
 import threading
 
 
@@ -24,6 +23,7 @@ class Flags(object):
 
     TIME = "time"
     LOSS = "loss"
+    PORT = "port"
 
     parsed_args = None
 
@@ -67,6 +67,9 @@ def _parse_args():
     parser.add_argument('--loss', dest=Flags.LOSS, type=float, nargs=argparse.REMAINDER,
                         help="Loss rates to test.",
                         default=[0.001, 0.01, 0.1, 1, 2, 5, 10, 15, 20, 25, 30, 40, 50])
+    parser.add_argument('--port', dest=Flags.PORT, type=int, nargs=1,
+                        help="Which port to use.",
+                        default=5050)
 
     Flags.parsed_args = vars(parser.parse_args())
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
@@ -111,10 +114,10 @@ def main():
     server_q = Queue.Queue()
     experiment_q = Queue.Queue()
 
-    # Start the server
-    server_proc = _start_server(5050)
-
     loss_rates = Flags.parsed_args[Flags.LOSS]
+    port = Flags.parsed_args[Flags.PORT]
+    # Start the server
+    server_proc = _start_server(port)
 
     # start a pair of thread to read output from server
     server_t = threading.Thread(
@@ -126,7 +129,7 @@ def main():
     for loss in loss_rates:
         client_proc = _run_experiment(loss)
         client_proc.stdin.write(
-            "stdbuf -o0 python client.py 5050 cubic" + "\n")
+            "stdbuf -o0 python client.py " + str(port) + " cubic" + "\n")
 
         # start a pair of thread to read output from client
         client_t = threading.Thread(
@@ -156,6 +159,7 @@ def main():
         # TODO(luke): This is leaving a bunch of zombie client processes.
     server_proc.terminate()
     debug_print("Terminating driver.")
+
 
 if __name__ == '__main__':
     main()
