@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 
 
-DEBUG_LOG_ENABLED = False
+DEBUG_LOG_ENABLED = True
 
 # Debug Levels
 DEBUG_LOG_ERROR = 0
@@ -12,7 +12,7 @@ DEBUG_LOG_INFO = 2
 DEBUG_LOG_VERBOSE = 3
 
 # Only output messages upto the Info Level by default.
-DEBUG_LOG_LEVEL = DEBUG_LOG_INFO
+DEBUG_LOG_LEVEL = DEBUG_LOG_VERBOSE
 
 
 def debug_print(msg):
