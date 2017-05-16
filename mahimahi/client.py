@@ -29,20 +29,20 @@ def _check_cc(input):
     elif input == "cubic" or input == "CUBIC":
         return "cubic"
     else:
-        raise argparse.ArgumentTypeError("Choose 'bbr' or 'cubic' as CC.")
+        raise argparse.ArgumentTypeError("Choose 'bbr' or 'cubic' as CC: %s" % input)
 
 
 def parse_args():
     """Parse experimental parameters from the commandline."""
     parser = argparse.ArgumentParser(
         description="Process experimental params.")
-    parser.add_argument('PORT', dest=Flags.PORT, type=int,
+    parser.add_argument(Flags.PORT, type=int,
                         help="Enter the port number to connect to.",
                         default=5050)
-    parser.add_argument('CC', dest=Flags.CC, type=_check_cc,
+    parser.add_argument(Flags.CC, type=_check_cc,
                         help="Congestion control algorithm to use.",
                         default="cubic")
-    parser.add_argument('--addr', dest=Flags.ADDR, type=_check_cc,
+    parser.add_argument('--addr', dest=Flags.ADDR,
                         help="Address to connect to.",
                         default=(os.environ.get("MAHIMAHI_BASE") or "127.0.0.1"))
     parser.add_argument('--size', dest=Flags.SIZE, type=int,
@@ -67,7 +67,7 @@ def run_client():
         s.connect((address, port))
         debug_print("connection established")
     except socket.error as msg:
-        debug_print_error("cannot connect: " + msg)
+        debug_print_error("cannot connect: " + str(msg))
         sys.exit(-1)
 
     # Generate a random message of SIZE a single time. Send this over and over.
@@ -77,4 +77,5 @@ def run_client():
         s.send(msg)
 
 if __name__ == '__main__':
+    parse_args()
     run_client()

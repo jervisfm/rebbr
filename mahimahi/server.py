@@ -2,9 +2,9 @@
 """Simple Python Server."""
 import argparse
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
+from multiprocessing import Process
 import socket
 import sys
-from multiprocessing import Process
 
 
 class Flags(object):
@@ -19,7 +19,7 @@ def parse_args():
     """Parse experimental parameters from the commandline."""
     parser = argparse.ArgumentParser(
         description="Process experimental params.")
-    parser.add_argument('PORT', dest=Flags.PORT, type=int,
+    parser.add_argument(Flags.PORT, type=int,
                         help="Enter the port number to connect to.",
                         default=5050)
     parser.add_argument('--size', dest=Flags.SIZE, type=int,
@@ -65,4 +65,5 @@ def run_server():
     s.close()
 
 if __name__ == '__main__':
+    parse_args()
     run_server()
