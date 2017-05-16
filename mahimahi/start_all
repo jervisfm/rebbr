@@ -19,10 +19,10 @@ push @command, q{./client.py 5050 1};
 # for the contest, we will send data over Verizon's downlink
 # (datagrump sender's uplink)
 die unless $command[ 3 ] eq "UPLINK";
-$command[ 3 ] = qq{12Mbps.down};
+$command[ 3 ] = qq{100Mbps.down};
 
 die unless $command[ 4 ] eq "DOWNLINK";
-$command[ 4 ] = qq{12Mbps.up};
+$command[ 4 ] = qq{100Mbps.up};
 
 system @command;
 
