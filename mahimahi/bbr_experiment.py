@@ -80,7 +80,9 @@ def _run_experiment(loss):
     # cmd1 = ("mm-delay 50 mm-loss uplink " + str(loss) + " --meter-uplink " +
     #         "--once 100Mbps.up 100Mbps.down")
     process = subprocess.Popen(
-        ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
+         "mm-link", "100Mbps.up", "100Mbps.down", "--uplink-log=/tmp/bbr_log",
+         "--meter-uplink", "--once"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     return process
 
@@ -121,8 +123,8 @@ def main():
     loss_rates = Flags.parsed_args[Flags.LOSS]
     client_proc = _run_experiment(loss_rates[0])
 
-    client_proc.stdin.write("ls -a")
-    # client_proc.stdin.write("stdbuf -o0 python client.py 5050 cubic")
+    # client_proc.stdin.write("ls -a\n")
+    client_proc.stdin.write("stdbuf -o0 python client.py 5050 cubic" + "\n")
 
     # start a pair of thread to read output from server
     server_t = threading.Thread(
