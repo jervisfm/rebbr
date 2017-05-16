@@ -12,7 +12,7 @@ create the corresponding figures.
 """
 
 import argparse
-from bbr_logging import debug_print, debug_print_error, debug_print_verbose
+from bbr_logging import debug_print, debug_print_verbose
 import Queue
 import subprocess
 import threading
