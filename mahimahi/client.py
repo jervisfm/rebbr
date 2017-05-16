@@ -1,12 +1,13 @@
 #!/usr/bin/python
+"""Client that can be CUBIC or BBR."""
 
+from multiprocessing import Process
 import os
 import random
 import socket
 import string
 import struct
 import sys
-import thread
 import time
 
 SAVE_CWND = 1
@@ -37,20 +38,24 @@ except socket.error as msg:
 msg = ''.join(random.choice(string.ascii_letters) for _ in range(SIZE))
 
 starttime = time.time()
-def log_cwnd (f, s):
+
+
+def log_cwnd(f, s):
+    """Write out cwnd data."""
     while True:
         # Read CWND
         # NOTE: We are parsing the first 92 bytes into a tuple where the first 7 elements are 1 byte long
         # and the next 21 are 4 bytes long. Then getting index 25 (the snd_cwnd)
-        cwnd = struct.unpack("B"*7+"I"*21, s.getsockopt(socket.SOL_TCP, socket.TCP_INFO, 92))[25]
-        advmss = struct.unpack("B"*7+"I"*21, s.getsockopt(socket.SOL_TCP, socket.TCP_INFO, 92))[26]
+        cwnd = struct.unpack("B" * 7 + "I" * 21, s.getsockopt(socket.SOL_TCP, socket.TCP_INFO, 92))[25]
+        advmss = struct.unpack("B" * 7 + "I" * 21, s.getsockopt(socket.SOL_TCP, socket.TCP_INFO, 92))[26]
         f.write(str(cwnd * advmss) + '\n')
         time.sleep(0.2 - ((time.time() - starttime) % 0.2))
 
 # Open a log file to print TCP info
 if SAVE_CWND:
     f = open("cwnd_data.csv", 'w')
-    thread.start_new_thread(log_cwnd, (f, s))
+    p = Process(target=log_cwnd, args=(f, s))
+    p.start()
 
 while True:
     s.send(msg)
