@@ -12,7 +12,9 @@ create the corresponding figures.
 """
 
 import argparse
-from bbr_logging import debug_print, debug_print_warn, debug_print_error, debug_print_verbose
+from bbr_logging import debug_print, debug_print_error, debug_print_verbose
+import subprocess
+import sys
 
 
 class Flags(object):
@@ -56,7 +58,31 @@ def parse_args():
 
 def run_experiment(loss_rate):
     """Run a single throughput experiment with the given loss rate."""
-    pass
+    debug_print("Running experiment with loss of: " + str(loss_rate))
+    # cmd1 = ("mm-delay 50")
+    # cmd2 = ("ls -a")
+    cmd1 = ("mm-delay 50 mm-loss uplink " + str(loss_rate) + " --meter-uplink" +
+           "--once 100Mbps.up 100Mbps.down")
+    cmd2 = ("./client.py 5050 0")
+    process = subprocess.Popen("{}; {}".format(
+        cmd1, cmd2), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    if error:
+        debug_print_error(error)
+
+    debug_print(output)
+
+
+def start_server():
+    """Run the Python server."""
+    try:
+        process = subprocess.Popen("./server.py 5050", shell=True, stdout=subprocess.PIPE)
+    except OSError as err:
+        debug_print_error(err)
+        sys.exit(-1)
+
+    debug_print_verbose("Starting server: " + str(process))
+    return process
 
 
 def main():
@@ -69,6 +95,16 @@ def main():
     # Generate the trace files based on the parameter
     generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
     generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
+
+    # Start the server
+    server_proc = start_server()
+
+    # loss_rates = Flags.parsed_args[Flags.LOSS]
+    # for loss in loss_rates:
+    #     run_experiment(loss)
+    #     break
+
+    server_proc.terminate()  # Kill the server to clean up
 
 if __name__ == '__main__':
     main()
