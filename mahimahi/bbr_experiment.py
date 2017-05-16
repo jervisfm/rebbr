@@ -28,6 +28,7 @@ def generate_100mpbs_trace(seconds, filename):
     """Generate a 100Mbps trace that last for the specified time."""
     # TODO(luke): We want this to take in a bandwidth and length and generate
     # the corresponding trace file. We can just use 100Mbps for now.
+    debug_print_verbose("Creating " + str(seconds) + " sec Trace: " + filename)
     with open(filename, 'w') as outfile:
         for ms_counter in range(int(seconds * 1000)):
             if (ms_counter % 3 == 0):
@@ -49,8 +50,13 @@ def parse_args():
                         help="Loss rates to test.",
                         default=[0.001, 0.01, 0.1, 1, 2, 5, 10, 15, 20, 25, 30, 40, 50])
 
-    Flags.parsed_args = parser.parse_args()
+    Flags.parsed_args = vars(parser.parse_args())
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
+
+
+def run_experiment(loss_rate):
+    """Run a single throughput experiment with the given loss rate."""
+    pass
 
 
 def main():
