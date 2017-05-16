@@ -13,8 +13,10 @@ create the corresponding figures.
 
 import argparse
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
+import Queue
 import subprocess
 import sys
+import threading
 
 
 class Flags(object):
@@ -26,7 +28,21 @@ class Flags(object):
     parsed_args = None
 
 
-def generate_100mpbs_trace(seconds, filename):
+def _read_output(pipe, q):
+    """Read output from `pipe`, when line has been read, putsline on Queue `q`."""
+    while True:
+        l = pipe.readline()
+        q.put(l)
+
+
+def _read_input(write_pipe, in_pipe_name):
+    """Read input from a pipe with name `read_pipe_name`, writing this input straight into `write_pipe`."""
+    while True:
+        with open(in_pipe_name, "r") as f:
+            write_pipe.write(f.read())
+
+
+def _generate_100mpbs_trace(seconds, filename):
     """Generate a 100Mbps trace that last for the specified time."""
     # TODO(luke): We want this to take in a bandwidth and length and generate
     # the corresponding trace file. We can just use 100Mbps for now.
@@ -41,7 +57,7 @@ def generate_100mpbs_trace(seconds, filename):
                     outfile.write(str(ms_counter + 1) + '\n')
 
 
-def parse_args():
+def _parse_args():
     """Parse experimental parameters from the commandline."""
     parser = argparse.ArgumentParser(
         description="Process experimental params.")
@@ -56,30 +72,29 @@ def parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
-def run_experiment(loss_rate):
+def _run_experiment(loss):
     """Run a single throughput experiment with the given loss rate."""
-    debug_print("Running experiment with loss of: " + str(loss_rate))
-    # cmd1 = ("mm-delay 50")
-    # cmd2 = ("ls -a")
-    cmd1 = ("mm-delay 50 mm-loss uplink " + str(loss_rate) + " --meter-uplink" +
-           "--once 100Mbps.up 100Mbps.down")
-    cmd2 = ("./client.py 5050 0")
-    process = subprocess.Popen("{}; {}".format(
-        cmd1, cmd2), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    if error:
-        debug_print_error(error)
+    debug_print("Running experiment with loss of: " + str(loss))
 
-    debug_print(output)
+    # Set up the mahimahi environment
+    # cmd1 = ("mm-delay 50 mm-loss uplink " + str(loss) + " --meter-uplink " +
+    #         "--once 100Mbps.up 100Mbps.down")
+    process = subprocess.Popen(
+        ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+
+    return process
 
 
-def start_server():
+def _run_experiments(loss_rates):
+    for loss in loss_rates:
+        _run_experiment(loss)
+        break
+
+
+def _start_server(port):
     """Run the Python server."""
-    try:
-        process = subprocess.Popen("./server.py 5050", shell=True, stdout=subprocess.PIPE)
-    except OSError as err:
-        debug_print_error(err)
-        sys.exit(-1)
+    process = subprocess.Popen(
+        ["stdbuf", "-o0", "python", "server.py", str(port)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     debug_print_verbose("Starting server: " + str(process))
     return process
@@ -90,21 +105,66 @@ def main():
     debug_print("Replicating Google BBR Figure 8.")
 
     # Grab the experimental parameters
-    parse_args()
+    _parse_args()
 
     # Generate the trace files based on the parameter
-    generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
-    generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
+    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
+    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
+
+    # queues for storing output lines
+    server_q = Queue.Queue()
+    experiment_q = Queue.Queue()
 
     # Start the server
-    server_proc = start_server()
+    server_proc = _start_server(5050)
+
+    loss_rates = Flags.parsed_args[Flags.LOSS]
+    client_proc = _run_experiment(loss_rates[0])
+
+    client_proc.stdin.write("ls -a")
+    # client_proc.stdin.write("stdbuf -o0 python client.py 5050 cubic")
+
+    # start a pair of thread to read output from server
+    server_t = threading.Thread(
+        target=_read_output, args=(server_proc.stdout, server_q))
+    server_t.daemon = True
+    server_t.start()
+
+    # start a pair of thread to read output from client
+    client_t = threading.Thread(
+        target=_read_output, args=(client_proc.stdout, experiment_q))
+    client_t.daemon = True
+    client_t.start()
 
     # loss_rates = Flags.parsed_args[Flags.LOSS]
     # for loss in loss_rates:
     #     run_experiment(loss)
     #     break
 
-    server_proc.terminate()  # Kill the server to clean up
+    # server_proc.terminate()  # Kill the server to clean up
+    # debug_print_verbose("Terminated the server.")
+
+    while True:
+        server_proc.poll()
+        client_proc.poll()
+        if server_proc.returncode is not None or client_proc.returncode is not None:
+            server_proc.terminate()
+            break
+
+        # write output from Server (if there is any)
+        try:
+            l = server_q.get(False)
+            debug_print("Server: " + l)
+        except Queue.Empty:
+            pass
+
+        # write output from client (if there is any)
+        try:
+            l = experiment_q.get(False)
+            debug_print("Client: " + l)
+        except Queue.Empty:
+            pass
+
 
 if __name__ == '__main__':
     main()

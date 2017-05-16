@@ -32,7 +32,7 @@ def _check_cc(input):
         raise argparse.ArgumentTypeError("Choose 'bbr' or 'cubic' as CC: %s" % input)
 
 
-def parse_args():
+def _parse_args():
     """Parse experimental parameters from the commandline."""
     parser = argparse.ArgumentParser(
         description="Process experimental params.")
@@ -53,7 +53,7 @@ def parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
-def run_client():
+def _run_client():
     """Run the client."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cong_control = Flags.parsed_args[Flags.CC]
@@ -65,7 +65,7 @@ def run_client():
     debug_print(address)
     try:
         s.connect((address, port))
-        debug_print("connection established")
+        debug_print_verbose("connection established")
     except socket.error as msg:
         debug_print_error("cannot connect: " + str(msg))
         sys.exit(-1)
@@ -76,6 +76,7 @@ def run_client():
     while True:
         s.send(msg)
 
+
 if __name__ == '__main__':
-    parse_args()
-    run_client()
+    _parse_args()
+    _run_client()
