@@ -191,3 +191,27 @@ I will note a useful command for deleting the created VM is:
 ```
 $ gcloud compute   instances delete "bbrtest1"
 ```
+
+
+# WIP/LOCAL VM
+
+VMWare to get a Ubuntu 16.04.2 VM.
+
+Update to kernel v4.11.1
+
+```bash
+wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.11.1/linux-headers-4.11.1-041101_4.11.1-041101.201705140931_all.deb
+wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.11.1/linux-headers-4.11.1-041101-generic_4.11.1-041101.201705140931_amd64.deb
+wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.11.1/linux-image-4.11.1-041101-generic_4.11.1-041101.201705140931_amd64.deb
+```
+
+Install
+```
+sudo dpkg -i *.deb
+```
+
+Reboot. Check with:
+
+```
+uname -sr
+```
