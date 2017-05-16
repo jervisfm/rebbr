@@ -2,9 +2,9 @@
 """Simple Python Server."""
 import argparse
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
-from multiprocessing import Process
 import socket
 import sys
+import time
 
 
 class Flags(object):
@@ -30,17 +30,21 @@ def parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
+def _handle_connection(conn, size):
+    num_msg = 0
+    start_time = time.time()
+    while True:
+        msg = conn.recv(size)
+        if not msg:
+            debug_print("Received messages: " + str(num_msg))
+            break
+        num_msg += 1
+    elapsed_time = time.time() - start_time
+    debug_print(elapsed_time)
+
+
 def run_server():
     """Run the server continuously."""
-    def handle_connection(conn, size):
-        num_msg = 0
-        while True:
-            msg = conn.recv(size)
-            if not msg:
-                break
-            num_msg += 1
-        print(num_msg)
-
     port = Flags.parsed_args[Flags.PORT]
     size = Flags.parsed_args[Flags.SIZE]
 
@@ -59,9 +63,8 @@ def run_server():
     while (True):
         conn, _ = s.accept()
         debug_print("Accepted connection")
-        p = Process(target=handle_connection, args=(conn, size))
-        p.start()
-        p.join()
+        _handle_connection(conn, size)
+        debug_print("Completed connection")
     s.close()
 
 if __name__ == '__main__':
