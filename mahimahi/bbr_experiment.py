@@ -142,22 +142,20 @@ def main():
             # write output from Server (if there is any)
             try:
                 l = server_q.get(False)
-                debug_print("Server: " + l)
+                debug_print("           <<< Server" + l)
             except Queue.Empty:
                 pass
 
             # write output from client (if there is any)
             try:
                 l = experiment_q.get(False)
-                debug_print("Client: " + l)
+                debug_print("Client >>> " + l)
             except Queue.Empty:
                 pass
 
-        # TODO(luke): does this leave a bunch of zombie threads?
-
+        # TODO(luke): This is leaving a bunch of zombie client processes.
     server_proc.terminate()
     debug_print("Terminating driver.")
-
 
 if __name__ == '__main__':
     main()

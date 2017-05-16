@@ -46,6 +46,8 @@ def _handle_connection(conn, size):
     debug_print_verbose("Num msg: " + str(num_msg))
     debug_print_verbose("Size: " + str(size) + " bytes")
     debug_print_verbose("Time: " + str(elapsed_time))
+    goodput = (num_msg * size * 8) / elapsed_time / 1e6
+    debug_print("Goodput: " + str(goodput))
 
 
 def run_server():
