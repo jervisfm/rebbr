@@ -34,13 +34,18 @@ def _handle_connection(conn, size):
     num_msg = 0
     start_time = time.time()
     while True:
-        msg = conn.recv(size)
+        conn.settimeout(1.0)
+        try:
+            msg = conn.recv(size)
+        except socket.timeout:
+            msg = None
         if not msg:
-            debug_print("Received messages: " + str(num_msg))
             break
         num_msg += 1
     elapsed_time = time.time() - start_time
-    debug_print(elapsed_time)
+    debug_print_verbose("Num msg: " + str(num_msg))
+    debug_print_verbose("Size: " + str(size) + " bytes")
+    debug_print_verbose("Time: " + str(elapsed_time))
 
 
 def run_server():
@@ -64,7 +69,6 @@ def run_server():
         conn, _ = s.accept()
         debug_print("Accepted connection")
         _handle_connection(conn, size)
-        debug_print("Completed connection")
     s.close()
 
 if __name__ == '__main__':

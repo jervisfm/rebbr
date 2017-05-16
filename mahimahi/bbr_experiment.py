@@ -87,12 +87,6 @@ def _run_experiment(loss):
     return process
 
 
-def _run_experiments(loss_rates):
-    for loss in loss_rates:
-        _run_experiment(loss)
-        break
-
-
 def _start_server(port):
     """Run the Python server."""
     process = subprocess.Popen(
