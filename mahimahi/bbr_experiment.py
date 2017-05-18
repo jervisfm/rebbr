@@ -12,7 +12,10 @@ create the corresponding figures.
 """
 
 import argparse
-from bbr_logging import debug_print, debug_print_verbose
+from bbr_logging import debug_print, debug_print_verbose, debug_print_error
+import csv
+import matplotlib
+from matplotlib import pyplot as plt
 import subprocess
 import time
 
@@ -77,7 +80,7 @@ def _parse_args():
 def _run_experiment(loss, port, cong_ctrl):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
-                str(loss) + ",\tcong_ctrl = " + str(cong_ctrl) + "]")
+                str(loss) + ", cong_ctrl = " + str(cong_ctrl) + "]")
 
     process = subprocess.Popen(
         ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
@@ -105,17 +108,38 @@ def _make_plots(logfile):
 
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput]
     """
+    cubic = {"loss": [], "goodput": []}
+    bbr = {"loss": [], "goodput": []}
+    with open(logfile, 'rb') as csvfile:
+        reader = csv.reader(csvfile)
+        reader.next() # skip header row
+        for (cc, loss, goodput) in reader:
+            if cc == 'cubic':
+                cubic['loss'].append(loss)
+                cubic['goodput'].append(goodput)
+            elif cc == 'bbr':
+                bbr['loss'].append(loss)
+                bbr['goodput'].append(goodput)
+            else:
+                debug_print_error("This shouldn't happen.")
+    debug_print_verbose(cubic)
+    debug_print_verbose(bbr)
     # TODO(luke) generate the plot like figure 8
-    return
+    fig1, ax1 = plt.subplots()
+
+    ax1.plot([10, 100, 1000], [1, 2, 3])
+    ax1.set_xscale('log')
+    ax1.set_xticks([20, 200, 500])
+    ax1.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    plt.show()
 
 
 def main():
     """Run the experiments."""
     debug_print("Replicating Google BBR Figure 8.")
     logfile = './experiment_log.csv'
-    with open(logfile, "w"):
-        # log.write("cc, loss, goodput\n")
-        pass
+    with open(logfile, "w") as log:
+        log.write("cc, loss, goodput\n")
 
     # Grab the experimental parameters
     _parse_args()
