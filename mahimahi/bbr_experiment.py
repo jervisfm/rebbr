@@ -101,9 +101,13 @@ def _start_server(port, loss, cong_ctrl):
 
 
 def _make_plots(logfile):
-    """Generate high quality plots of data."""
+    """Generate high quality plots of data.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput]
+    """
     # TODO(luke) generate the plot like figure 8
     return
+
 
 def main():
     """Run the experiments."""
