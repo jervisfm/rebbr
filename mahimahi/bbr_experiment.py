@@ -13,9 +13,7 @@ create the corresponding figures.
 
 import argparse
 from bbr_logging import debug_print, debug_print_verbose
-import Queue
 import subprocess
-import threading
 import time
 
 
@@ -78,11 +76,9 @@ def _parse_args():
 
 def _run_experiment(loss, port, cong_ctrl):
     """Run a single throughput experiment with the given loss rate."""
-    debug_print("Running experiment with loss of: " + str(loss))
+    debug_print("Running experiment [loss = " +
+                str(loss) + ",\tcong_ctrl = " + str(cong_ctrl) + "]")
 
-    # Set up the mahimahi environment
-    # cmd1 = ("mm-delay 50 mm-loss uplink " + str(loss) + " --meter-uplink " +
-    #         "--once 100Mbps.up 100Mbps.down")
     process = subprocess.Popen(
         ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
          "mm-link", "100Mbps.up", "100Mbps.down", "--uplink-log=/tmp/bbr_log",
@@ -94,19 +90,22 @@ def _run_experiment(loss, port, cong_ctrl):
     return process
 
 
-def _start_server(port):
+def _start_server(port, loss, cong_ctrl):
     """Run the Python server."""
+    # TODO(luke): add size?
     process = subprocess.Popen(
-        ["stdbuf", "-o0", "python", "server.py", str(port)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        ["stdbuf", "-o0", "python", "server.py", str(port), "--loss", str(loss), "--cc", str(cong_ctrl)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-    debug_print_verbose("Starting server: " + str(process))
+    debug_print_verbose("Starting server on port " + str(port))
     return process
 
 
 def main():
     """Run the experiments."""
     debug_print("Replicating Google BBR Figure 8.")
-
+    logfile = './experiment_log.csv'
+    with open(logfile, "w") as log:
+        log.write("cc, loss, goodput\n")
     # Grab the experimental parameters
     _parse_args()
 
@@ -115,58 +114,30 @@ def main():
     _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
 
     # queues for storing output lines
-    server_q = Queue.Queue()
+    # server_q = Queue.Queue()
     # experiment_q = Queue.Queue()
 
     loss_rates = Flags.parsed_args[Flags.LOSS]
     port = Flags.parsed_args[Flags.PORT]
-    # Start the server
-    server_proc = _start_server(port)
-
-    # start a pair of thread to read output from server
-    server_t = threading.Thread(
-        target=_read_output, args=(server_proc.stdout, server_q))
-    server_t.daemon = True
-    server_t.start()
 
     loss_rates = Flags.parsed_args[Flags.LOSS]
     for cong_ctrl in ['cubic', 'bbr']:
         for loss in loss_rates:
+            # Start the server
+            server_proc = _start_server(port, loss, cong_ctrl)
             client_proc = _run_experiment(loss, port, cong_ctrl)
-
-            # # start a pair of thread to read output from client
-            # client_t = threading.Thread(
-            #     target=_read_output, args=(client_proc.stdout, experiment_q))
-            # client_t.daemon = True
-            # client_t.start()
 
             while True:
                 client_proc.poll()
                 if client_proc.returncode is not None:
-                    debug_print_verbose(
-                        "Client returncode: " + str(client_proc.returncode))
-                    # give time for the server to close the connetion?
-                    time.sleep(2)
+                    time.sleep(2)  # Give the server time to log the results.
+                    server_proc.terminate()
                     break
 
-                # write output from Server (if there is any)
-                try:
-                    l = server_q.get(False)
-                    debug_print("           <<< Server" + l)
-                except Queue.Empty:
-                    pass
-
-                # # write output from client (if there is any)
-                # try:
-                #     l = experiment_q.get(False)
-                #     debug_print("Client >>> " + l)
-                # except Queue.Empty:
-                #     pass
-
-        # TODO(luke): This is leaving a bunch of zombie client processes
-    time.sleep(5)
+    debug_print("Experiment complete! Data stored in: " + str(logfile))
     debug_print("Terminating driver.")
-    server_proc.terminate()
+
+    #TODO(luke) Make the graphs from that CSV
 
 
 if __name__ == '__main__':
