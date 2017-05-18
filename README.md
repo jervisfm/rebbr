@@ -215,3 +215,15 @@ Reboot. Check with:
 ```
 uname -sr
 ```
+
+# Python deps
+* matplotlib
+
+```
+$ pip install matplotlib
+```
+
+* python-tk
+```
+$ sudo apt-get install python-tk
+```
