@@ -128,23 +128,24 @@ def _make_plots(logfile):
         for (cc, loss, goodput) in reader:
             loss_percent = float(loss) * 100
             xmark_ticks.append(loss_percent)
-            break
             if cc == 'cubic':
-                cubic['loss'].append(loss)
+                cubic['loss'].append(loss_percent)
                 cubic['goodput'].append(goodput)
-                print loss, goodput
-                cubic_fig.plot(loss, goodput)
             elif cc == 'bbr':
-                bbr['loss'].append(loss)
+                bbr['loss'].append(loss_percent)
                 bbr['goodput'].append(goodput)
-                bbr_fig.plot(loss_percent, goodput, color='green', linestyle='solid', marker='o',
-                             markersize=7)
+
             else:
                 debug_print_error("This shouldn't happen.")
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" %bbr)
 
-    #cubic_fig.plot([10, 100, 1000], [1, 0, 3], )
+    cubic_fig.plot(cubic['loss'], cubic['goodput'], color='red', linestyle='solid', marker='o',
+                 markersize=7)
+
+    bbr_fig.plot(bbr['loss'], bbr['goodput'], color='green', linestyle='solid', marker='o',
+                   markersize=7)
+
     axes.set_xscale('log')
 
     # For each loss percent, set a mark on x-axis.
