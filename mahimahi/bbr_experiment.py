@@ -110,28 +110,52 @@ def _make_plots(logfile):
     """
     cubic = {"loss": [], "goodput": []}
     bbr = {"loss": [], "goodput": []}
+    xmark_ticks = []
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig, axes = plt.subplots()
+
+    # Add a subplot for CUBIC/BBR plots. See https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
+    bbr_fig = fig.add_subplot(111)
+    cubic_fig = fig.add_subplot(111)
+
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
         reader.next() # skip header row
         for (cc, loss, goodput) in reader:
+            loss_percent = float(loss) * 100
+            xmark_ticks.append(loss_percent)
+            break
             if cc == 'cubic':
                 cubic['loss'].append(loss)
                 cubic['goodput'].append(goodput)
+                print loss, goodput
+                cubic_fig.plot(loss, goodput)
             elif cc == 'bbr':
                 bbr['loss'].append(loss)
                 bbr['goodput'].append(goodput)
+                bbr_fig.plot(loss_percent, goodput, color='green', linestyle='solid', marker='o',
+                             markersize=7)
             else:
                 debug_print_error("This shouldn't happen.")
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" %bbr)
-    # TODO(luke) generate the plot like figure 8
-    fig1, ax1 = plt.subplots()
 
-    ax1.plot([10, 100, 1000], [1, 2, 3])
-    ax1.set_xscale('log')
-    ax1.set_xticks([20, 200, 500])
-    ax1.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    #cubic_fig.plot([10, 100, 1000], [1, 0, 3], )
+    axes.set_xscale('log')
+
+    # For each loss percent, set a mark on x-axis.
+    axes.set_xticks(xmark_ticks)
+
+    axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+    # Show the figure interactively
     plt.show()
+
+    # TODO(jmuindi): Generate a PNG image of figure.
 
 
 def main():
