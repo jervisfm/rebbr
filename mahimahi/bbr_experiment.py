@@ -151,6 +151,10 @@ def _make_plots(logfile):
     # For each loss percent, set a mark on x-axis.
     axes.set_xticks(xmark_ticks)
 
+    # Make the X-Axis label look vertical to make them more readable.
+    axes.set_xticklabels(axes.xaxis.get_majorticklabels(), rotation=90)
+
+
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
     # Save the figure first.
