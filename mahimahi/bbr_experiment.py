@@ -16,6 +16,7 @@ from bbr_logging import debug_print, debug_print_verbose
 import Queue
 import subprocess
 import threading
+import time
 
 
 class Flags(object):
@@ -75,7 +76,7 @@ def _parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
-def _run_experiment(loss):
+def _run_experiment(loss, port, cong_ctrl):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment with loss of: " + str(loss))
 
@@ -85,7 +86,10 @@ def _run_experiment(loss):
     process = subprocess.Popen(
         ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
          "mm-link", "100Mbps.up", "100Mbps.down", "--uplink-log=/tmp/bbr_log",
-         "--meter-uplink", "--once"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+         "--meter-uplink", "--once", "--", "stdbuf", "-o0", "python",
+         "client.py", str(port), str(cong_ctrl)],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE)
 
     return process
 
@@ -112,7 +116,7 @@ def main():
 
     # queues for storing output lines
     server_q = Queue.Queue()
-    experiment_q = Queue.Queue()
+    # experiment_q = Queue.Queue()
 
     loss_rates = Flags.parsed_args[Flags.LOSS]
     port = Flags.parsed_args[Flags.PORT]
@@ -128,19 +132,21 @@ def main():
     loss_rates = Flags.parsed_args[Flags.LOSS]
     for cong_ctrl in ['cubic', 'bbr']:
         for loss in loss_rates:
-            client_proc = _run_experiment(loss)
-            client_proc.stdin.write(
-                "stdbuf -o0 python client.py " + str(port) + " " + cong_ctrl + "\n")
+            client_proc = _run_experiment(loss, port, cong_ctrl)
 
-            # start a pair of thread to read output from client
-            client_t = threading.Thread(
-                target=_read_output, args=(client_proc.stdout, experiment_q))
-            client_t.daemon = True
-            client_t.start()
+            # # start a pair of thread to read output from client
+            # client_t = threading.Thread(
+            #     target=_read_output, args=(client_proc.stdout, experiment_q))
+            # client_t.daemon = True
+            # client_t.start()
 
             while True:
                 client_proc.poll()
                 if client_proc.returncode is not None:
+                    debug_print_verbose(
+                        "Client returncode: " + str(client_proc.returncode))
+                    # give time for the server to close the connetion?
+                    time.sleep(2)
                     break
 
                 # write output from Server (if there is any)
@@ -150,17 +156,17 @@ def main():
                 except Queue.Empty:
                     pass
 
-                # write output from client (if there is any)
-                try:
-                    l = experiment_q.get(False)
-                    debug_print("Client >>> " + l)
-                except Queue.Empty:
-                    pass
+                # # write output from client (if there is any)
+                # try:
+                #     l = experiment_q.get(False)
+                #     debug_print("Client >>> " + l)
+                # except Queue.Empty:
+                #     pass
 
         # TODO(luke): This is leaving a bunch of zombie client processes
-
-    server_proc.terminate()
+    time.sleep(5)
     debug_print("Terminating driver.")
+    server_proc.terminate()
 
 
 if __name__ == '__main__':

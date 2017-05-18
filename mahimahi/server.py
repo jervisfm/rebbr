@@ -40,6 +40,8 @@ def _handle_connection(conn, size):
         except socket.timeout:
             msg = None
         if not msg:
+            debug_print_verbose("Closing connection.")
+            conn.close()
             break
         num_msg += 1
     elapsed_time = time.time() - start_time
