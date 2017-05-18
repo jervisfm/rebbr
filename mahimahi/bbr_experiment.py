@@ -122,8 +122,8 @@ def _make_plots(logfile):
                 bbr['goodput'].append(goodput)
             else:
                 debug_print_error("This shouldn't happen.")
-    debug_print_verbose(cubic)
-    debug_print_verbose(bbr)
+    debug_print_verbose("CUBIC: %s" % cubic)
+    debug_print_verbose("BBR: %s" %bbr)
     # TODO(luke) generate the plot like figure 8
     fig1, ax1 = plt.subplots()
 
