@@ -60,6 +60,8 @@ def _handle_connection(conn, size, loss, cc):
     debug_print_verbose("Time: " + str(elapsed_time))
     goodput = (num_msg * size * 8) / elapsed_time / 1e6
     debug_print("Goodput: " + str(goodput))
+    # HACK: Now that we're restarting the server everytime, bbr_experiment has
+    # to be the one that creates the blnk logfile so we can just append to it.
     with open(logfile, "a") as log:
         debug_print_verbose("Logging to " + str(logfile))
         log.write(str(cc) + ", " + str(loss) + ", " + str(goodput) + "\n")
