@@ -165,7 +165,8 @@ def _make_plots(logfile):
     plt.ylabel("Goodput (Mbps)")
     plt.xlabel("Loss Rate (%)")
 
-
+    # Plot Graph legend
+    axes.legend()
 
     # Save the figure first.
     # TODO(jmuindi): Make the figure parameter configurable.
