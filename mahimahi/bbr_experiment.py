@@ -117,10 +117,14 @@ def _make_plots(logfile):
 
     # Create a figure.
     fig, axes = plt.subplots()
+    fig_width = 20
+    fig_height = 10
+    fig.set_size_inches(fig_width, fig_height, forward=True)
 
     # Add a subplot for CUBIC/BBR plots. See https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
     bbr_fig = fig.add_subplot(111)
     cubic_fig = fig.add_subplot(111)
+
 
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
@@ -128,6 +132,7 @@ def _make_plots(logfile):
         for (cc, loss, goodput) in reader:
             loss_percent = float(loss) * 100
             xmark_ticks.append(loss_percent)
+
             if cc == 'cubic':
                 cubic['loss'].append(loss_percent)
                 cubic['goodput'].append(goodput)
