@@ -157,8 +157,9 @@ def main():
 
     loss_rates = Flags.parsed_args[Flags.LOSS]
     for cong_ctrl in ['cubic', 'bbr']:
-        for loss in loss_rates:
+        for loss_percent in loss_rates:
             # Start the server
+            loss = loss_percent / 100.0
             server_proc = _start_server(port, loss, cong_ctrl)
             client_proc = _run_experiment(loss, port, cong_ctrl)
 
