@@ -163,7 +163,7 @@ def _make_plots(logfile):
     # Plot Graph tile and axis labels.
     plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
     plt.ylabel("Goodput (Mbps)")
-    plt.xlabel("Loss Rate (%)")
+    plt.xlabel("Loss Rate (%) - Log Scale")
 
     # Plot Graph legend
     axes.legend()
