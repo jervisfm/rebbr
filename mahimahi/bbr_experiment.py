@@ -161,9 +161,9 @@ def _make_plots(logfile):
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
     # Plot Graph tile and axis labels.
-    plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
-    plt.ylabel("Goodput (Mbps)")
-    plt.xlabel("Loss Rate (%) - Log Scale")
+    plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links", size=20)
+    plt.ylabel("Goodput (Mbps)", size=20)
+    plt.xlabel("Loss Rate (%) - Log Scale", size=20)
 
     # Plot Graph legend
     axes.legend()
