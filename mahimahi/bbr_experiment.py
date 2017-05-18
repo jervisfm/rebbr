@@ -145,10 +145,10 @@ def _make_plots(logfile):
     debug_print_verbose("BBR: %s" %bbr)
 
     cubic_fig.plot(cubic['loss'], cubic['goodput'], color='red', linestyle='solid', marker='o',
-                 markersize=7)
+                   markersize=7, label='CUBIC')
 
     bbr_fig.plot(bbr['loss'], bbr['goodput'], color='green', linestyle='solid', marker='o',
-                   markersize=7)
+                 markersize=7, label='BBR')
 
     axes.set_xscale('log')
 
@@ -158,8 +158,14 @@ def _make_plots(logfile):
     # Make the X-Axis label look vertical to make them more readable.
     axes.set_xticklabels(axes.xaxis.get_majorticklabels(), rotation=90)
 
-
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+    # Plot Graph tile and axis labels.
+    plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
+    plt.ylabel("Goodput (Mbps)")
+    plt.xlabel("Loss Rate (%)")
+
+
 
     # Save the figure first.
     # TODO(jmuindi): Make the figure parameter configurable.
