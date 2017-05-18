@@ -100,12 +100,19 @@ def _start_server(port, loss, cong_ctrl):
     return process
 
 
+def _make_plots(logfile):
+    """Generate high quality plots of data."""
+    # TODO(luke) generate the plot like figure 8
+    return
+
 def main():
     """Run the experiments."""
     debug_print("Replicating Google BBR Figure 8.")
     logfile = './experiment_log.csv'
-    with open(logfile, "w") as log:
-        log.write("cc, loss, goodput\n")
+    with open(logfile, "w"):
+        # log.write("cc, loss, goodput\n")
+        pass
+
     # Grab the experimental parameters
     _parse_args()
 
@@ -137,8 +144,8 @@ def main():
     debug_print("Experiment complete! Data stored in: " + str(logfile))
     debug_print("Terminating driver.")
 
-    #TODO(luke) Make the graphs from that CSV
-
+    # TODO(luke) Make the graphs from that CSV
+    _make_plots(logfile)
 
 if __name__ == '__main__':
     main()
