@@ -153,10 +153,13 @@ def _make_plots(logfile):
 
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
-    # Show the figure interactively
+    # Save the figure first.
+    # TODO(jmuindi): Make the figure parameter configurable.
+    plt.savefig("figure8.png")
+
+    # Then show the figure interactively
     plt.show()
 
-    # TODO(jmuindi): Generate a PNG image of figure.
 
 
 def main():
