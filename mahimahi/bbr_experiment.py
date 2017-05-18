@@ -126,37 +126,39 @@ def main():
     server_t.start()
 
     loss_rates = Flags.parsed_args[Flags.LOSS]
-    for loss in loss_rates:
-        client_proc = _run_experiment(loss)
-        client_proc.stdin.write(
-            "stdbuf -o0 python client.py " + str(port) + " cubic" + "\n")
+    for cong_ctrl in ['cubic', 'bbr']:
+        for loss in loss_rates:
+            client_proc = _run_experiment(loss)
+            client_proc.stdin.write(
+                "stdbuf -o0 python client.py " + str(port) + " " + cong_ctrl + "\n")
 
-        # start a pair of thread to read output from client
-        client_t = threading.Thread(
-            target=_read_output, args=(client_proc.stdout, experiment_q))
-        client_t.daemon = True
-        client_t.start()
+            # start a pair of thread to read output from client
+            client_t = threading.Thread(
+                target=_read_output, args=(client_proc.stdout, experiment_q))
+            client_t.daemon = True
+            client_t.start()
 
-        while True:
-            client_proc.poll()
-            if client_proc.returncode is not None:
-                break
+            while True:
+                client_proc.poll()
+                if client_proc.returncode is not None:
+                    break
 
-            # write output from Server (if there is any)
-            try:
-                l = server_q.get(False)
-                debug_print("           <<< Server" + l)
-            except Queue.Empty:
-                pass
+                # write output from Server (if there is any)
+                try:
+                    l = server_q.get(False)
+                    debug_print("           <<< Server" + l)
+                except Queue.Empty:
+                    pass
 
-            # write output from client (if there is any)
-            try:
-                l = experiment_q.get(False)
-                debug_print("Client >>> " + l)
-            except Queue.Empty:
-                pass
+                # write output from client (if there is any)
+                try:
+                    l = experiment_q.get(False)
+                    debug_print("Client >>> " + l)
+                except Queue.Empty:
+                    pass
 
-        # TODO(luke): This is leaving a bunch of zombie client processes.
+        # TODO(luke): This is leaving a bunch of zombie client processes
+
     server_proc.terminate()
     debug_print("Terminating driver.")
 
