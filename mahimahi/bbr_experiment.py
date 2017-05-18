@@ -116,10 +116,9 @@ def _make_plots(logfile):
     # We prefer to use explicit keyword syntax to help code readability.
 
     # Create a figure.
-    fig, axes = plt.subplots()
     fig_width = 20
     fig_height = 10
-    fig.set_size_inches(fig_width, fig_height, forward=True)
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
     # Add a subplot for CUBIC/BBR plots. See https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
     bbr_fig = fig.add_subplot(111)
