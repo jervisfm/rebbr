@@ -156,7 +156,7 @@ def _make_plots(logfile):
     axes.set_xticks(xmark_ticks)
 
     # Make the X-Axis label look vertical to make them more readable.
-    axes.set_xticklabels(axes.xaxis.get_majorticklabels(), rotation=90)
+    axes.set_xticklabels(axes.xaxis.get_majorticklabels(), rotation=90, fontsize=15)
 
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
