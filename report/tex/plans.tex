@@ -15,17 +15,8 @@ We use MahiMahi\footnote{\url{http://mahimahi.mit.edu/}} as our network
 emulator. To setup the experiment, we use a delay shell to simulate a 100ms
 delay, a loss shell to control the amount of packet loss, and a link
 shell to approximate a 100Mbps link and mimic the conditions of the original
-BBR results.
-
-Once the data collection is complete, the script generates a plot of the
-performance between BBR and CUBIC.
-
-A preliminary run produced the graph results in Figure~\ref{fig:rebbr8}. We
-can see that CUBIC only performs acceptably when the loss rate is extremely
-small. At loss rates of 0.01\% and above, CUBIC performance deteriorates.
-BBR, on the other hand, is able to deliver a larger percentage of the available
-throughput when compared to CUBIC on loss rates as high as 50\%.
-
+BBR results. Once the data collection is complete, the script generates a plot
+of the performance between BBR and CUBIC.
 
 \begin{figure}[h]
   \centering
@@ -34,6 +25,12 @@ throughput when compared to CUBIC on loss rates as high as 50\%.
   emulated environment.}
   \label{fig:rebbr8}
 \end{figure}
+
+A preliminary run produced the graph results in Figure~\ref{fig:rebbr8}. We
+can see that CUBIC only performs acceptably when the loss rate is extremely
+small. At loss rates of 0.01\% and above, CUBIC performance deteriorates.
+BBR, on the other hand, is able to deliver a larger percentage of the available
+throughput when compared to CUBIC on loss rates as high as 50\%.
 
 
 \para{Plan}
