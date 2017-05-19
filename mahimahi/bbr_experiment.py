@@ -116,18 +116,18 @@ def _make_plots(logfile):
     # We prefer to use explicit keyword syntax to help code readability.
 
     # Create a figure.
-    fig_width = 20
-    fig_height = 10
+    fig_width = 8
+    fig_height = 5
     fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
-    # Add a subplot for CUBIC/BBR plots. See https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
-    bbr_fig = fig.add_subplot(111)
-    cubic_fig = fig.add_subplot(111)
-
+    # Add a subplot for CUBIC/BBR plots. See
+    # https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
+    # bbr_fig = fig.add_subplot(111)
+    # cubic_fig = fig.add_subplot(111)
 
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
-        reader.next() # skip header row
+        reader.next()  # skip header row
         for (cc, loss, goodput) in reader:
             loss_percent = float(loss) * 100
             xmark_ticks.append(loss_percent)
@@ -142,39 +142,50 @@ def _make_plots(logfile):
             else:
                 debug_print_error("This shouldn't happen.")
     debug_print_verbose("CUBIC: %s" % cubic)
-    debug_print_verbose("BBR: %s" %bbr)
+    debug_print_verbose("BBR: %s" % bbr)
 
-    cubic_fig.plot(cubic['loss'], cubic['goodput'], color='red', linestyle='solid', marker='o',
-                   markersize=7, label='CUBIC')
+    matplotlib.rcParams.update({'figure.autolayout': True})
 
-    bbr_fig.plot(bbr['loss'], bbr['goodput'], color='green', linestyle='solid', marker='o',
-                 markersize=7, label='BBR')
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
+             markersize=7, label='CUBIC')
 
-    axes.set_xscale('log')
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
+             markersize=7, label='BBR')
+
+    plt.xscale('log')
+
+    xmark_ticks = sorted([x for x in set(xmark_ticks)])  # deduplicate
+    xmark_ticks.remove(25.0)
+    xmark_ticks.remove(15.0)
+    xmark_ticks.remove(40.0)
 
     # For each loss percent, set a mark on x-axis.
     axes.set_xticks(xmark_ticks)
 
     # Make the X-Axis label look vertical to make them more readable.
-    axes.set_xticklabels(axes.xaxis.get_majorticklabels(), rotation=90, fontsize=15)
+    axes.set_xticklabels(axes.xaxis.get_majorticklabels(),
+                         rotation=90, fontsize=12)
+
+    # Format the Y-Axis too
+    axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=12)
 
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
     # Plot Graph tile and axis labels.
-    plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links", size=30)
-    plt.ylabel("Goodput (Mbps)", size=30)
-    plt.xlabel("Loss Rate (%) - Log Scale", size=29)
+    # plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
+    plt.ylabel("Goodput (Mbps)", size=20)
+    plt.xlabel("Loss Rate (%) - Log Scale", size=20)
 
     # Plot Graph legend
-    axes.legend(fontsize = 'xx-large')
+    plt.legend(loc='upper right')
 
     # Save the figure first.
     # TODO(jmuindi): Make the figure parameter configurable.
     plt.savefig("figure8.png")
-
+    plt.tight_layout()
     # Then show the figure interactively
     plt.show()
-
 
 
 def main():
@@ -218,6 +229,7 @@ def main():
 
     # TODO(luke) Make the graphs from that CSV
     _make_plots(logfile)
+
 
 if __name__ == '__main__':
     main()
