@@ -54,6 +54,10 @@ memory buffers. The limited amount of buffering means that there is the occasion
 a burst of incoming packets that arrive at the same time. After switching to BBR from CUBIC, Google saw throughput
 improvements ranging from 2x to 25x.
 
+Lastly, the authors do acknowledge that there is still work to be done in terms of how BBR interoperates
+with existing loss-based congestion controls algorithms such as CUBIC. In cases where routers have large buffers,
+CUBIC senders can drown out BBR. Gracefully mitigating this is an onging area of research.
+
 
 
 \begin{figure}[h]
