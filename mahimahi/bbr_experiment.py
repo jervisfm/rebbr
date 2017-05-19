@@ -166,7 +166,7 @@ def _make_plots(logfile):
     plt.xlabel("Loss Rate (%) - Log Scale", size=29)
 
     # Plot Graph legend
-    axes.legend()
+    axes.legend(fontsize = 'xx-large')
 
     # Save the figure first.
     # TODO(jmuindi): Make the figure parameter configurable.
