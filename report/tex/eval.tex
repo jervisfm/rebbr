@@ -1,23 +1,25 @@
 % !TEX root = ../main.tex
 
-\section{Reproducing BBR Evaluation}
+\section{Reproducing BBR Results}
 
-\para{Goal} What subset of results did you choose to reproduce?
+\para{Goal}
+\emph{What subset of results did you choose to reproduce?}
 
 The main result we focused on reproducing is the comparison between
 CUBIC and BBR and how their performance varies across different loss
-rate.
+rate (shown in Figure~\ref{fig:bbr8}, which appears as Figure 8 in the
+original paper).
 
-This result can be seen in  Figure~\ref{fig:bbr8}.
+Our goal is to not only verify the behavior of BBR compared to CUBIC in
+networks with various loss rates, but also explore the parameters of this
+particular experiment.
 
-\para{Motivation} Why that particular choice?
+\para{Motivation}
+\emph{Why that particular choice?}
 
-We chose this result because it is a good representative summary
-that captures the primary essence of the paper. This is that
-loss-based congestion control schemes such as CUBIC are non-optimal
-because their use of packet loss as a signal for congestion makes them
-very sensitive to any (regular) packet loss that occurs on a path and it
-also contributes to buffer bloat which increases latency.
-
-
-
+We chose this result because it is one of the primary results of the paper,
+and is a large contributing factor of BBR's ability to better utilize
+network infrastructure (as seen in Google's B4 deployment). It is also one
+of the stronger claims of the paper, which shows that BBR differs significantly
+from the behavior of CUBIC, a loss-based congestion control algorithm and the
+current default in Linux.
