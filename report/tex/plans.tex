@@ -12,6 +12,20 @@ shell to approximate a 100Mbps link.
 
 Once the data collection is complete, the script generates a plot of the performance between BBR and CUBIC.
 
+Our run produced the graph results in Figure~\ref{fig:rebbr8}. We can see that CUBIC only performs acceptably
+when the loss rate is extremely small. At loss rates of 0.01% and above, CUBIC peformance quickly deteiriotaes.
+BBR on the other hand is able to deliver decent performance when compared to CUBIC on loss rates as high as
+20%.
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=5cm]{./img/rebbr_fig8.png}
+  \caption{ReBBR: Throughput vs loss rate comparing CUBIC vs BBR.}
+  \label{fig:rebbr8}
+\end{figure}
+
+
 
 \para{Plan}
 For the remaining days, we need to make the experiment setup run on Google Cloud. Running a machine on Google Cloud
