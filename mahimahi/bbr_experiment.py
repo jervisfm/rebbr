@@ -164,10 +164,10 @@ def _make_plots(logfile):
 
     # Make the X-Axis label look vertical to make them more readable.
     axes.set_xticklabels(axes.xaxis.get_majorticklabels(),
-                         rotation=90, fontsize=12)
+                         rotation=90, fontsize=14)
 
     # Format the Y-Axis too
-    axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=12)
+    axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=14)
 
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -178,12 +178,12 @@ def _make_plots(logfile):
     plt.xlabel("Loss Rate (%) - Log Scale", size=20)
 
     # Plot Graph legend
-    plt.legend(loc='upper right')
+    plt.legend(loc='upper right', fontsize=20)
+    plt.tight_layout()
 
     # Save the figure first.
     # TODO(jmuindi): Make the figure parameter configurable.
     plt.savefig("figure8.png")
-    plt.tight_layout()
     # Then show the figure interactively
     plt.show()
 
