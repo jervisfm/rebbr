@@ -31,12 +31,45 @@ The BBR paper descibes a new form of congestion control that is based on actual
 congestion going in the network. The insight from the authors is that their
 approach estimates bottleneck bandwidth and then bottleneck latency in succession
 so as to be able to get as close as possible to the ideal operating point of
-maximum bandwidth and minimal latency.
+maximum bandwidth and minimal latency. The paper had severals findings.
 
-One of the findings is that BBR outperforms CUBIC for non-negligible loss rates.
-Figure~\ref{fig:bbr} shows a graph showing the performance comparison between BBR and CUBIC
+
+The first finding is that BBR can quickly adopt to changes in bottleneck link bandwidth.
+During operating, BBR spends most of its time continously probing if more bandwidth has
+become available. Figure~\ref{fig:bbr3} shows BBR reatcing to a 2x increase and a 2x decrease
+to bottleneck bandwidth within about 2 seconds.
+
+The second finding is that BBR is able to avoid bloating router buffers unnecesarilly and thus
+it is able to keep RTT at a minimum value. This is contrast to CUBIC which continues to bloat
+a router's buffer until it observes a packet loss event from overflowing the router buffer.
+Figure~\ref{fig:bbr5} shows CUBIC and BBR behave in this regard.
+
+The third and perhaps most important finding is that BBR outperforms CUBIC for non-negligible loss rates.
+Figure~\ref{fig:bbr8} shows a graph showing the performance comparison between BBR and CUBIC
 for varying loss rates.
 
+The authors report that Google has had a very good experience deploying BBR on B4. B4 is Google  data center to
+data center high-speed Wide Area Network and it's built primarily from commodity switches that have shallow/small
+memory buffers. The limited amount of buffering means that there is the occasional packet loss when there is a
+a burst of incoming packets that arrive at the same time. After switching to BBR from CUBIC, Google saw throughput
+improvements ranging from 2x to 25x.
+
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=7cm]{./img/bbr_fig3.png}
+  \caption{BBR converges to new bottleneck bandwidth at exponential rate.}
+  \label{fig:bbr3}
+\end{figure}
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=7cm]{./img/bbr_fig5.png}
+  \caption{BBR avoids bloating router buffer unlike CUBIC.}
+  \label{fig:bbr5}
+\end{figure}
 
 
 
@@ -44,5 +77,5 @@ for varying loss rates.
   \centering
   \includegraphics[height=7cm]{./img/bbr_fig8.png}
   \caption{Throughput vs loss rate comparing CUBIC vs BBR.}
-  \label{fig:bbr}
+  \label{fig:bbr8}
 \end{figure}
