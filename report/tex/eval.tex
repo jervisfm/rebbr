@@ -9,3 +9,13 @@ CUBIC and BBR and how their performance varies across different loss
 rate.
 
 \para{Motivation} Why that particular choice?
+
+We chose this result because it is a good representative summary
+that captures the primary essence of the paper. This is that
+loss-based congestion control schemes such as CUBIC are non-optimal
+because their use of packet loss as a signal for congestion makes them
+very sensitive to any (regular) packet loss that occurs on a path and it
+also contributes to buffer bloat which increases latency.
+
+
+
