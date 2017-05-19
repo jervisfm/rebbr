@@ -33,13 +33,16 @@ approach estimates bottleneck bandwidth and then bottleneck latency in successio
 so as to be able to get as close as possible to the ideal operating point of
 maximum bandwidth and minimal latency.
 
-The core finding is that BBR outperforms CUBIC for loss rates above 0.1\%. Here's
-the a graph showing the performance comparison between BBR and CUBIC.
+One of the findings is that BBR outperforms CUBIC for non-negligible loss rates.
+Figure~\ref{fig:bbr} shows a graph showing the performance comparison between BBR and CUBIC
+for varying loss rates.
+
+
 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[height=3cm]{./img/bbr_fig8.png}
-  \caption{Throughput vs 95-percentile Signal Delay for simple AIMD.}
-  \label{fig:exb}
+  \includegraphics[height=7cm]{./img/bbr_fig8.png}
+  \caption{Throughput vs loss rate comparing CUBIC vs BBR.}
+  \label{fig:bbr}
 \end{figure}
