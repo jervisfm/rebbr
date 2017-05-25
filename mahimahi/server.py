@@ -1,46 +1,12 @@
 #!/usr/bin/python
 """Simple Python Server."""
-import argparse
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
 import socket
 import sys
 import time
 
-logfile = './experiment_log.csv'
 
-
-class Flags(object):
-    """Dictionary object to store parsed flags."""
-
-    PORT = "port"
-    SIZE = "size"
-    LOSS = "loss"
-    CC = "congestion_control"
-    parsed_args = None
-
-
-def parse_args():
-    """Parse experimental parameters from the commandline."""
-    parser = argparse.ArgumentParser(
-        description="Process experimental params.")
-    parser.add_argument(Flags.PORT, type=int,
-                        help="Enter the port number to connect to.",
-                        default=5050)
-    parser.add_argument('--size', dest=Flags.SIZE, type=int,
-                        help="Size of messages to send.",
-                        default=1024)
-    parser.add_argument('--loss', dest=Flags.LOSS, type=float,
-                        help="Allow the server to be aware of the loss.",
-                        default=0.0)
-    parser.add_argument('--cc', dest=Flags.CC,
-                        help="Allow the server to be aware of the protocol.",
-                        default="cubic")
-
-    Flags.parsed_args = vars(parser.parse_args())
-    debug_print_verbose("Parse: " + str(Flags.parsed_args))
-
-
-def _handle_connection(conn, size, loss, cc):
+def _handle_connection(q, conn, size, cc):
     num_msg = 0
     start_time = time.time()
     while True:
@@ -60,20 +26,13 @@ def _handle_connection(conn, size, loss, cc):
     debug_print_verbose("Time: " + str(elapsed_time))
     goodput = (num_msg * size * 8) / elapsed_time / 1e6
     debug_print("Goodput: " + str(goodput))
-    # HACK: Now that we're restarting the server everytime, bbr_experiment has
-    # to be the one that creates the blnk logfile so we can just append to it.
-    with open(logfile, "a") as log:
-        debug_print_verbose("Logging to " + str(logfile))
-        log.write(str(cc) + ", " + str(loss) + ", " + str(goodput) + "\n")
+
+    # Send the Goodput back to the master
+    q.put(str(goodput))
 
 
-def run_server():
+def run_server(q, cc, port=5050, size=1024):
     """Run the server continuously."""
-    port = Flags.parsed_args[Flags.PORT]
-    size = Flags.parsed_args[Flags.SIZE]
-    loss = Flags.parsed_args[Flags.LOSS]
-    cc = Flags.parsed_args[Flags.CC]
-
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -89,10 +48,5 @@ def run_server():
     while (True):
         conn, _ = s.accept()
         debug_print("Accepted connection")
-        _handle_connection(conn, size, loss, cc)
+        _handle_connection(q, conn, size, cc)
     s.close()
-
-
-if __name__ == '__main__':
-    parse_args()
-    run_server()

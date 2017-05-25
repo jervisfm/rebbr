@@ -16,6 +16,8 @@ from bbr_logging import debug_print, debug_print_verbose, debug_print_error
 import csv
 import matplotlib
 from matplotlib import pyplot as plt
+from multiprocessing import Process, Queue
+from server import run_server
 import subprocess
 import time
 
@@ -29,6 +31,7 @@ class Flags(object):
     CC = "congestion_control"
     RTT = "rtt"
     BW = "bottleneck_bandwidth"
+    SIZE = "packet_size"
 
     parsed_args = None
 
@@ -57,7 +60,7 @@ def _parse_args():
                         default=20)
     parser.add_argument('--loss', dest=Flags.LOSS, type=float, nargs=1,
                         help="Loss rate to test (%).",
-                        default=0.01)
+                        default=0.1)
     parser.add_argument('--port', dest=Flags.PORT, type=int, nargs=1,
                         help="Which port to use.",
                         default=5050)
@@ -70,10 +73,13 @@ def _parse_args():
     parser.add_argument('--bw', dest=Flags.BW, type=float, nargs=1,
                         help="Specify the bottleneck bandwidth in Mbps.",
                         default=100)
+    parser.add_argument('--size', dest=Flags.SIZE, type=int, nargs=1,
+                        help="Specify the packet size in bytes.",
+                        default=1024)
 
     Flags.parsed_args = vars(parser.parse_args())
     # Preprocess the loss into a percentage
-    Flags.parsed_args[Flags.LOSS] = Flags.parsed_args[Flags.LOSS][0] / 100.0
+    Flags.parsed_args[Flags.LOSS] = Flags.parsed_args[Flags.LOSS] / 100.0
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
@@ -213,19 +219,21 @@ def main():
     _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
 
     port = Flags.parsed_args[Flags.PORT]
+    size = Flags.parsed_args[Flags.SIZE]
     loss = Flags.parsed_args[Flags.LOSS]
     cc = Flags.parsed_args[Flags.CC]
     for cong_ctrl in ['bbr', cc]:
-        # Start the server
-        server_proc = _start_server(port, loss, cong_ctrl)
-        client_proc = _run_experiment(loss, port, cong_ctrl)
+        # Start the client and server
+        q = Queue()
+        server_proc = Process(target=run_server, args=(q, cong_ctrl, port, size))
+        server_proc.start()
+        client_proc = Process(target=_run_experiment, args=(loss, port, cong_ctrl, True))
+        client_proc.start()
 
-        while True:
-            client_proc.poll()
-            if client_proc.returncode is not None:
-                time.sleep(1.5)  # Give the server time to log the results.
-                server_proc.terminate()
-                break
+        client_proc.join()          # Wait for the client to finish
+        time.sleep(1.5)             # give the server some time to close
+        debug_print(q.get())        # grab output of the server
+        server_proc.terminate()     # kill the server
 
     debug_print("Experiment complete! Data stored in: " + str(logfile))
     debug_print("Terminating driver.")
