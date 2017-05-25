@@ -16,10 +16,10 @@ from bbr_logging import debug_print, debug_print_verbose, debug_print_error
 import csv
 import matplotlib
 from matplotlib import pyplot as plt
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Event
+import os
 from server import run_server
 import subprocess
-import time
 
 
 class Flags(object):
@@ -32,9 +32,18 @@ class Flags(object):
     RTT = "rtt"
     BW = "bottleneck_bandwidth"
     SIZE = "packet_size"
-
+    LOG = "logfile_directory"
     parsed_args = None
 
+
+
+def _check_cc(input):
+    if input == "bbr" or input == "BBR":
+        return "bbr"
+    elif input == "cubic" or input == "CUBIC":
+        return "cubic"
+    else:
+        raise argparse.ArgumentTypeError("Choose 'bbr' or 'cubic' as CC: %s" % input)
 
 def _generate_100mpbs_trace(seconds, filename):
     """Generate a 100Mbps trace that last for the specified time."""
@@ -64,7 +73,7 @@ def _parse_args():
     parser.add_argument('--port', dest=Flags.PORT, type=int, nargs=1,
                         help="Which port to use.",
                         default=5050)
-    parser.add_argument('--cc', dest=Flags.CC, type=str, nargs=1,
+    parser.add_argument('--cc', dest=Flags.CC, type=_check_cc, nargs=1,
                         help="Which congestion control algorithm to compare.",
                         default="cubic")
     parser.add_argument('--rtt', dest=Flags.RTT, type=int, nargs=1,
@@ -73,6 +82,9 @@ def _parse_args():
     parser.add_argument('--bw', dest=Flags.BW, type=float, nargs=1,
                         help="Specify the bottleneck bandwidth in Mbps.",
                         default=100)
+    parser.add_argument('--log_dir', dest=Flags.LOG, type=str, nargs=1,
+                        help="Direectory to store the logfiles.",
+                        default="./logs/")
     parser.add_argument('--size', dest=Flags.SIZE, type=int, nargs=1,
                         help="Specify the packet size in bytes.",
                         default=1024)
@@ -88,35 +100,19 @@ def _run_experiment(loss, port, cong_ctrl, display=True):
     debug_print("Running experiment [loss = " +
                 str(loss) + ", cong_ctrl = " + str(cong_ctrl) + "]")
 
+    client_args = "(\'" + str(cong_ctrl) + "\')"
     if display:
-        process = subprocess.Popen(
-            ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
-             "mm-link", "100Mbps.up", "100Mbps.down", "--uplink-log=/tmp/bbr_log",
-             "--meter-uplink", "--once", "--", "stdbuf", "-o0", "python",
-             "client.py", str(port), str(cong_ctrl)],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE)
+        command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
+         "mm-link", "100Mbps.up", "100Mbps.down", "--meter-uplink", "--once",
+         "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+        subprocess.check_call(command, shell=True)
     else:
-        # If display is False, don't show it. This is used for headless operation.
-        process = subprocess.Popen(
-            ["stdbuf", "-o0", "mm-delay", "50", "mm-loss", "uplink", str(loss),
-             "mm-link", "100Mbps.up", "100Mbps.down", "--uplink-log=/tmp/bbr_log",
-             "--once", "--", "stdbuf", "-o0", "python",
-             "client.py", str(port), str(cong_ctrl)],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE)
-
-    return process
-
-
-def _start_server(port, loss, cong_ctrl):
-    """Run the Python server."""
-    # TODO(luke): add size?
-    process = subprocess.Popen(
-        ["stdbuf", "-o0", "python", "server.py", str(port), "--loss", str(loss), "--cc", str(cong_ctrl)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
-    debug_print_verbose("Starting server on port " + str(port))
-    return process
+        # If display is False, don't show it. This is used for headless
+        # operation.
+        command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
+         "mm-link", "100Mbps.up", "100Mbps.down", "--once",
+         "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+        subprocess.check_call(command, shell=True)
 
 
 def _make_plots(logfile):
@@ -204,38 +200,78 @@ def _make_plots(logfile):
     plt.show()
 
 
+def _init_log():
+    """Initialize the log file."""
+    log_dir = Flags.parsed_args[Flags.LOG]
+    loss = Flags.parsed_args[Flags.LOSS]
+    cc = Flags.parsed_args[Flags.CC]
+    bw = Flags.parsed_args[Flags.BW]
+    rtt = Flags.parsed_args[Flags.RTT]
+
+    # Make the directory if it doesn't exist
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    # Construct the filename
+    base_filename = '_'.join([str(x) for x in [cc, loss, rtt, bw]])
+    filename = os.path.join(log_dir, base_filename + ".csv")
+
+    with open(filename, "w") as log:
+        log.write("cc, loss, goodput, rtt, bw\n")
+
+    return filename
+
+
+def _update_log(log, goodput):
+    """Output a row to the logfile."""
+    loss = Flags.parsed_args[Flags.LOSS]
+    cc = Flags.parsed_args[Flags.CC]
+    bw = Flags.parsed_args[Flags.BW]
+    rtt = Flags.parsed_args[Flags.RTT]
+    with open(log, "a") as log:
+        row = ', '.join([str(x) for x in [cc, loss, goodput, rtt, bw]])
+        log.write(row + "\n")
+
+
 def main():
     """Run the experiments."""
     debug_print("Replicating Google BBR Figure 8.")
-    logfile = './experiment_log.csv'
-    with open(logfile, "w") as log:
-        log.write("cc, loss, goodput\n")
 
     # Grab the experimental parameters
     _parse_args()
-
-    # Generate the trace files based on the parameter
-    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
-    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
 
     port = Flags.parsed_args[Flags.PORT]
     size = Flags.parsed_args[Flags.SIZE]
     loss = Flags.parsed_args[Flags.LOSS]
     cc = Flags.parsed_args[Flags.CC]
+
+    log = _init_log()
+
+    # Generate the trace files based on the parameter
+    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
+    _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
+
     for cong_ctrl in ['bbr', cc]:
         # Start the client and server
         q = Queue()
-        server_proc = Process(target=run_server, args=(q, cong_ctrl, port, size))
+        e = Event()
+        server_proc = Process(
+            target=run_server, args=(q, e, cong_ctrl, port, size))
         server_proc.start()
-        client_proc = Process(target=_run_experiment, args=(loss, port, cong_ctrl, True))
+        client_proc = Process(target=_run_experiment,
+                              args=(loss, port, cong_ctrl, True))
         client_proc.start()
-
         client_proc.join()          # Wait for the client to finish
-        time.sleep(1.5)             # give the server some time to close
-        debug_print(q.get())        # grab output of the server
-        server_proc.terminate()     # kill the server
+        debug_print_verbose("Setting Event")
+        e.set()  # signal the server to shutdown
+        server_proc.join()     # kill the server
+        goodput = q.get()
+        _update_log(log, goodput)
+        debug_print_verbose("Run complete. Goodput: " + str(goodput))
+        q.close()
+        e.clear()
 
-    debug_print("Experiment complete! Data stored in: " + str(logfile))
+    debug_print("Experiment complete! Data stored in: " + str(log))
     debug_print("Terminating driver.")
 
     # TODO(luke) Make the graphs from that CSV
