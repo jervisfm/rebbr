@@ -33,8 +33,8 @@ class Flags(object):
     BW = "bottleneck_bandwidth"
     SIZE = "packet_size"
     LOG = "logfile_directory"
+    HEADLESS = "headless"
     parsed_args = None
-
 
 
 def _check_cc(input):
@@ -43,7 +43,9 @@ def _check_cc(input):
     elif input == "cubic" or input == "CUBIC":
         return "cubic"
     else:
-        raise argparse.ArgumentTypeError("Choose 'bbr' or 'cubic' as CC: %s" % input)
+        raise argparse.ArgumentTypeError(
+            "Choose 'bbr' or 'cubic' as CC: %s" % input)
+
 
 def _generate_100mpbs_trace(seconds, filename):
     """Generate a 100Mbps trace that last for the specified time."""
@@ -88,6 +90,9 @@ def _parse_args():
     parser.add_argument('--size', dest=Flags.SIZE, type=int, nargs=1,
                         help="Specify the packet size in bytes.",
                         default=1024)
+    parser.add_argument('--headless', dest=Flags.HEADLESS, action='store_true',
+                        help="Specify the packet size in bytes.",
+                        default=False)
 
     Flags.parsed_args = vars(parser.parse_args())
     # Preprocess the loss into a percentage
@@ -95,23 +100,24 @@ def _parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
-def _run_experiment(loss, port, cong_ctrl, display=True):
+def _run_experiment(loss, port, cong_ctrl):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
                 str(loss) + ", cong_ctrl = " + str(cong_ctrl) + "]")
 
     client_args = "(\'" + str(cong_ctrl) + "\')"
-    if display:
+
+    headless = Flags.parsed_args[Flags.HEADLESS]
+
+    if not headless:
         command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
-         "mm-link", "100Mbps.up", "100Mbps.down", "--meter-uplink", "--once",
-         "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                            "mm-link", "100Mbps.up", "100Mbps.down", "--meter-uplink", "--once",
+                            "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
     else:
-        # If display is False, don't show it. This is used for headless
-        # operation.
         command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
-         "mm-link", "100Mbps.up", "100Mbps.down", "--once",
-         "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                            "mm-link", "100Mbps.up", "100Mbps.down", "--once",
+                            "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
 
 
@@ -259,7 +265,7 @@ def main():
             target=run_server, args=(q, e, cong_ctrl, port, size))
         server_proc.start()
         client_proc = Process(target=_run_experiment,
-                              args=(loss, port, cong_ctrl, True))
+                              args=(loss, port, cong_ctrl))
         client_proc.start()
         client_proc.join()          # Wait for the client to finish
         debug_print_verbose("Setting Event")
@@ -270,8 +276,8 @@ def main():
         debug_print_verbose("Run complete. Goodput: " + str(goodput))
         q.close()
         e.clear()
+        debug_print("Experiment complete! Data stored in: " + str(log))
 
-    debug_print("Experiment complete! Data stored in: " + str(log))
     debug_print("Terminating driver.")
 
     # TODO(luke) Make the graphs from that CSV
