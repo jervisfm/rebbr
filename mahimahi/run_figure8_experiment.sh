@@ -11,6 +11,7 @@ LOG_FILE=figure8_experiment.csv
 rm -f $LOG_FILE
 
 # Run experiment.
+echo "Running Figure 8 experiment."
 for loss_rate in $LOSS_RATES; do
   echo "Executing trial with Loss rate: $loss_rate ..."
   ./bbr_experiment.py --loss=$loss_rate >> $LOG_FILE
