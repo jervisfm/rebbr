@@ -88,10 +88,11 @@ def _parse_args():
     Flags.parsed_args = vars(parser.parse_args())
     # Preprocess the loss into a percentage
     Flags.parsed_args[Flags.LOSS] = Flags.parsed_args[Flags.LOSS] / 100.0
+    Flags.parsed_args[Flags.RTT] = Flags.parsed_args[Flags.RTT][0]
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
-def _run_experiment(loss, port, cong_ctrl):
+def _run_experiment(loss, port, cong_ctrl, rtt):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
                 str(loss) + ", cong_ctrl = " + str(cong_ctrl) + "]")
@@ -101,12 +102,12 @@ def _run_experiment(loss, port, cong_ctrl):
     headless = Flags.parsed_args[Flags.HEADLESS]
 
     if not headless:
-        command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
+        command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                             "mm-link", "100Mbps.up", "100Mbps.down", "--meter-uplink", "--once",
                             "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
     else:
-        command = ' '.join(["mm-delay", "50", "mm-loss", "uplink", str(loss),
+        command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                             "mm-link", "100Mbps.up", "100Mbps.down", "--once",
                             "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
@@ -136,8 +137,7 @@ def main():
     server_proc = Process(
         target=run_server, args=(q, e, cc, port, size))
     server_proc.start()
-    client_proc = Process(target=_run_experiment,
-                          args=(loss, port, cc))
+    client_proc = Process(target=_run_experiment, args=(loss, port, cc, rtt))
     client_proc.start()
     client_proc.join()          # Wait for the client to finish
     debug_print_verbose("Signal server to shutdown.")
