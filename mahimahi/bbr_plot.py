@@ -31,7 +31,7 @@ def make_figure_8_plot(logfile):
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
         reader.next()  # skip header row
-        for (cc, loss, goodput) in reader:
+        for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
             xmark_ticks.append(loss_percent)
 
