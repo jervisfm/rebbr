@@ -6,10 +6,10 @@ import matplotlib
 from matplotlib import pyplot as plt
 
 
-def _make_plots(logfile):
-    """Generate high quality plots of data.t
+def make_figure_8_plot(logfile):
+    """Generate high quality plot of data to reproduce figure 8.
 
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput]
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
     cubic = {"loss": [], "goodput": []}
     bbr = {"loss": [], "goodput": []}
@@ -85,7 +85,6 @@ def _make_plots(logfile):
     plt.tight_layout()
 
     # Save the figure first.
-    # TODO(jmuindi): Make the figure parameter configurable.
     plt.savefig("figure8.png")
     # Then show the figure interactively
     plt.show()
