@@ -83,7 +83,7 @@ def _parse_args():
         description="Process experimental params.")
     parser.add_argument('--time', dest=Flags.TIME, type=int,
                         help="Enter a time in seconds to run each trace.",
-                        default=20)
+                        default=60)
     parser.add_argument('--loss', dest=Flags.LOSS, type=float,
                         help="Loss rate to test (%).",
                         default=0.1)
