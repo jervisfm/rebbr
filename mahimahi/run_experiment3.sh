@@ -6,7 +6,7 @@ set +x
 
 LOSS_RATES="0.001 0.01 0.1 1 2 5 10 15 20 25 30 40 50"
 # Mahimahi min supported RTT is 2ms
-RTTS_MS="2 10 100 1000 10000 30000 60000"
+RTTS_MS="2 10 100 1000 10000 30000"
 CONGESTION_CONTROL="cubic bbr"
 LOG_FILE=experiment3.csv
 
