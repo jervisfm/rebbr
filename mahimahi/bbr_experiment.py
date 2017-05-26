@@ -112,6 +112,20 @@ def _parse_args():
     debug_print_verbose("Parse: " + str(Flags.parsed_args))
 
 
+def _parse_mahimahi_log():
+    # Piped to /dev/null because stdout is just the SVG generated.
+    # We just want the throutput information, which is stderr.
+    command = ("mm-throughput-graph 10 /tmp/mahimahi_log > /dev/null")
+    output = subprocess.check_output(
+        command, shell=True, stderr=subprocess.STDOUT)
+    output = output.split('\n')
+    capacity = float(output[0].split(' ')[2])
+    goodput = float(output[1].split(' ')[2])
+    q_delay = float(output[2].split(' ')[5])
+    s_delay = float(output[3].split(' ')[4])
+    return (capacity, goodput, q_delay, s_delay)
+
+
 def _run_experiment(loss, port, cong_ctrl, rtt, throughput):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
@@ -124,15 +138,14 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput):
     if not headless:
         command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                             "mm-link", str(throughput) + "Mbps.up", str(throughput) +
-                            "Mbps.down", "--meter-uplink-delay", "--meter-uplink", "--once",
+                            "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once",
                             "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
     else:
         command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
-                            "mm-link", str(throughput) +
-                            "Mbps.up", str(
-            throughput) + "Mbps.down", "--once",
-            "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                            "mm-link", str(throughput) + "Mbps.up", str(throughput) +
+                            "Mbps.down", "--once", "--uplink-log=/tmp/mahimahi_log",
+                            "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
 
 
@@ -165,14 +178,15 @@ def main():
     debug_print_verbose("Signal server to shutdown.")
     e.set()  # signal the server to shutdown
     server_proc.join()     # kill the server
-    goodput = q.get()
-    debug_print_verbose("Run complete. Goodput: " + str(goodput))
+    debug_print_verbose(
+        "Run complete. Server Estimated Goodput: " + str(q.get()))
     q.close()
     e.clear()
+    (capacity, goodput, q_delay, s_delay) = _parse_mahimahi_log()
     debug_print("Experiment complete!")
 
     # Print the output
-    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, bw]])
+    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, capacity]])
     stdout_print(results + "\n")
 
     _clean_up_trace(bw)
