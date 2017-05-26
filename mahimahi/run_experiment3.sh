@@ -18,7 +18,7 @@ echo "Running  experiment 3: effect of RTT"
 
 for cc in $CONGESTION_CONTROL; do
   for loss_rate in $LOSS_RATES; do
-    for rtt in $RTT_MS; do
+    for rtt in $RTTS_MS; do
       echo "Executing trial with cc=$cc Loss rate: $loss_rate RTT (ms): $rtt ..."
       ./bbr_experiment.py --cc=$cc --loss=$loss_rate --rtt=$rtt >> $LOG_FILE
     done
