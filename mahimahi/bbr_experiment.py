@@ -54,12 +54,9 @@ def _generate_trace(seconds, throughput):
     bits_per_packet = 12000
     low_avg = int((throughput) / (bits_per_packet / 1000))
     high_avg = low_avg + 1
-    debug_print_verbose(low_avg)
-    debug_print_verbose(high_avg)
     low_err = throughput - (low_avg * 12)
     high_err = throughput - (high_avg * 12)
-    debug_print_verbose(low_err)
-    debug_print_verbose(high_err)
+
     for filename in [str(throughput) + str(x) for x in ["Mbps.up", "Mbps.down"]]:
         with open(filename, 'w') as outfile:
             accumulated_err = 0
@@ -135,16 +132,21 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput):
 
     headless = Flags.parsed_args[Flags.HEADLESS]
 
+    buffersize = int(rtt * ((throughput * 1e6) / 8) / 1000)
+    debug_print_verbose(buffersize)
     if not headless:
         command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                             "mm-link", str(throughput) + "Mbps.up", str(throughput) +
-                            "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once",
+                            "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
+                            str(buffersize),
                             "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
     else:
         command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                             "mm-link", str(throughput) + "Mbps.up", str(throughput) +
                             "Mbps.down", "--once", "--uplink-log=/tmp/mahimahi_log",
+                            "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
+                            str(buffersize),
                             "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
         subprocess.check_call(command, shell=True)
 
