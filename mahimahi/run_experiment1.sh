@@ -13,6 +13,7 @@ rm -f $LOG_FILE
 
 # Run experiment.
 for loss_rate in $LOSS_RATES; do
+  echo "Executing trial with Loss rate: $loss_rate ..."
   ./bbr_experiment.py --loss=$loss_rate >> $LOG_FILE
 done
 
