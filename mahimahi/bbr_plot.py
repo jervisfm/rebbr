@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 def _make_plots(logfile):
-    """Generate high quality plots of data.
+    """Generate high quality plots of data.t
 
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput]
     """

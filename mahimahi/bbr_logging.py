@@ -2,8 +2,7 @@ from __future__ import print_function
 
 import sys
 
-
-DEBUG_LOG_ENABLED = True
+DEBUG_LOG_ENABLED = False
 
 # Debug Levels
 DEBUG_LOG_ERROR = 0

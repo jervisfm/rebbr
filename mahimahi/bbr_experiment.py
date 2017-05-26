@@ -34,13 +34,11 @@ class Flags(object):
 
 
 def _check_cc(input):
-    if input == "bbr" or input == "BBR":
-        return "bbr"
-    elif input == "cubic" or input == "CUBIC":
-        return "cubic"
+    if input.lower() in ['bbr', 'cubic', 'bic', 'vegas', 'westwood', 'reno']:
+        return input.lower()
     else:
         raise argparse.ArgumentTypeError(
-            "Choose 'bbr' or 'cubic' as CC: %s" % input)
+            "%s is not a supported algorithm" % input)
 
 
 def _generate_100mpbs_trace(seconds, filename):
@@ -114,7 +112,6 @@ def _run_experiment(loss, port, cong_ctrl):
         subprocess.check_call(command, shell=True)
 
 
-
 def main():
     """Run the experiments."""
     debug_print("Replicating Google BBR Figure 8.")
@@ -133,29 +130,28 @@ def main():
     _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.up")
     _generate_100mpbs_trace(Flags.parsed_args[Flags.TIME], "100Mbps.down")
 
-    for cong_ctrl in ['bbr', cc]:
-        # Start the client and server
-        q = Queue()
-        e = Event()
-        server_proc = Process(
-            target=run_server, args=(q, e, cong_ctrl, port, size))
-        server_proc.start()
-        client_proc = Process(target=_run_experiment,
-                              args=(loss, port, cong_ctrl))
-        client_proc.start()
-        client_proc.join()          # Wait for the client to finish
-        debug_print_verbose("Signal server to shutdown.")
-        e.set()  # signal the server to shutdown
-        server_proc.join()     # kill the server
-        goodput = q.get()
-        debug_print_verbose("Run complete. Goodput: " + str(goodput))
-        q.close()
-        e.clear()
-        debug_print("Experiment complete!")
+    # Start the client and server
+    q = Queue()
+    e = Event()
+    server_proc = Process(
+        target=run_server, args=(q, e, cc, port, size))
+    server_proc.start()
+    client_proc = Process(target=_run_experiment,
+                          args=(loss, port, cc))
+    client_proc.start()
+    client_proc.join()          # Wait for the client to finish
+    debug_print_verbose("Signal server to shutdown.")
+    e.set()  # signal the server to shutdown
+    server_proc.join()     # kill the server
+    goodput = q.get()
+    debug_print_verbose("Run complete. Goodput: " + str(goodput))
+    q.close()
+    e.clear()
+    debug_print("Experiment complete!")
 
-        # Print the output
-        results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, bw]])
-        stdout_print(results + "\n")
+    # Print the output
+    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, bw]])
+    stdout_print(results + "\n")
 
     debug_print("Terminating driver.")
 
