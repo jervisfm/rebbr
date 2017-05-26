@@ -151,7 +151,6 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput):
 
 def main():
     """Run the experiments."""
-    debug_print("Replicating Google BBR Figure 8.")
     # Grab the experimental parameterss
     _parse_args()
 

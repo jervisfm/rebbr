@@ -11,7 +11,7 @@ def _handle_connection(q, e, conn, size, cc):
     num_msg = 0
     start_time = time.time()
     conn.setblocking(0)  # set to non-blocking
-    timeout_in_seconds = 2.0
+    timeout_in_seconds = 1.0
     while not e.is_set():
         ready = select.select([conn], [], [], timeout_in_seconds)
         if ready[0]:
