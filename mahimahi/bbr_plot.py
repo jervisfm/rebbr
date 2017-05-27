@@ -103,7 +103,7 @@ def make_figure_8_plot(logfile):
 
     apply_axes_formatting(axes, xmark_ticks)
 
-    plot_titles(xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
+    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
 
     plot_legend(plt)
 
