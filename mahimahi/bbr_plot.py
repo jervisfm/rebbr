@@ -61,27 +61,17 @@ def save_figure(plt, name):
    if SHOW_INTERACTIVE_PLOTS:
        plt.show()
 
-def make_figure_8_plot(logfile):
-    """Generate high quality plot of data to reproduce figure 8.
+def parse_results_csv(input_csv_file):
+    """ Reads input csv file from bbr experiment and converts it into a python dictionary
+       convenient for plotting figures.
 
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+
     """
-    results = {}
-    cubic = {"loss": [], "goodput": []}
-    bbr = {"loss": [], "goodput": []}
-    xmark_ticks = []
-
-    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
-    # We prefer to use explicit keyword syntax to help code readability.
-
-    # Create a figure.
-    fig_width = 8
-    fig_height = 5
-    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
-
     # Parse CSV File into in-memory result dictionary. Format is like:
     # CongestionControl -> {"loss": [], "goodput": [], ... }
-    with open(logfile, 'rb') as csvfile:
+    results = {}
+    with open(input_csv_file, 'rb') as csvfile:
         reader = csv.reader(csvfile)
         # Skip header row
         reader.next()
@@ -106,7 +96,28 @@ def make_figure_8_plot(logfile):
             value_dict['rtt'].append(rtt)
             value_dict['bandwidth'].append(bandwidth)
             results[cc] = value_dict
+    return results
 
+
+def make_figure_8_plot(logfile):
+    """Generate high quality plot of data to reproduce figure 8.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    """
+    results = {}
+    cubic = {"loss": [], "goodput": []}
+    bbr = {"loss": [], "goodput": []}
+    xmark_ticks = []
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
     cubic = results['cubic']
     bbr = results['bbr']
     debug_print_verbose("CUBIC: %s" % cubic)
