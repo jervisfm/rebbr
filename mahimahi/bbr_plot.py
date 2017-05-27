@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """Module for creating all of the plots after the data has been gathered."""
-from bbr_logging import debug_print, debug_print_verbose, debug_print_error
+from bbr_logging import debug_print, debug_print_verbose, debug_print_error, debug_print_warn
 import csv
 import matplotlib
 from matplotlib import pyplot as plt
@@ -66,6 +66,7 @@ def make_figure_8_plot(logfile):
 
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
+    results = {}
     cubic = {"loss": [], "goodput": []}
     bbr = {"loss": [], "goodput": []}
     xmark_ticks = []
@@ -78,22 +79,36 @@ def make_figure_8_plot(logfile):
     fig_height = 5
     fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
+    # Parse CSV File into in-memory result dictionary. Format is like:
+    # CongestionControl -> {"loss": [], "goodput": [], ... }
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
-        reader.next()  # skip header row
+        # Skip header row
+        reader.next()
+
         for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
             xmark_ticks.append(loss_percent)
 
-            if cc == 'cubic':
-                cubic['loss'].append(loss_percent)
-                cubic['goodput'].append(goodput)
-            elif cc == 'bbr':
-                bbr['loss'].append(loss_percent)
-                bbr['goodput'].append(goodput)
+            if not cc:
+                debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
+                continue
 
+            if cc in results:
+                # Re-use existing dictionary
+                value_dict = results[cc]
             else:
-                debug_print_error("This shouldn't happen.")
+                # Create a new one.
+                value_dict = { "loss" : [], "goodput": [], "rtt": [], "bandwidth": [] }
+
+            value_dict['loss'].append(loss_percent)
+            value_dict['goodput'].append(goodput)
+            value_dict['rtt'].append(rtt)
+            value_dict['bandwidth'].append(bandwidth)
+            results[cc] = value_dict
+
+    cubic = results['cubic']
+    bbr = results['bbr']
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" % bbr)
 
