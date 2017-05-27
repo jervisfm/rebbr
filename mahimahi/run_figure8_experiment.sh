@@ -18,6 +18,6 @@ echo "Running Figure 8 experiment."
 for cc in $CONGESTION_CONTROL; do
   for loss_rate in $LOSS_RATES; do
     echo "Executing trial with cc=$cc Loss rate: $loss_rate ..."
-    ./bbr_experiment.py --cc=$cc --loss=$loss_rate >> $LOG_FILE
+    ./bbr_experiment.py --cc=$cc --loss=$loss_rate $@ >> $LOG_FILE
   done
 done
