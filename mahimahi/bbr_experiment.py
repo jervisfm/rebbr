@@ -84,7 +84,7 @@ def _parse_args():
                         help="Enter a time in seconds to run each trace.",
                         default=60)
     parser.add_argument('--loss', dest=Flags.LOSS, type=float,
-                        help="Loss rate to test (%).",
+                        help="Loss rate to test (%%).",
                         default=0.1)
     parser.add_argument('--port', dest=Flags.PORT, type=int,
                         help="Which port to use.",
