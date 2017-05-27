@@ -9,6 +9,32 @@ from matplotlib import pyplot as plt
 # Flag to control whether interactive plots should be shown.
 SHOW_INTERACTIVE_PLOTS = False
 
+def deduplicate_xmark_ticks(xmark_ticks):
+    """Removes redundant ticks for the given xmark_ticks. """
+    # Use a set to deduplicate.
+    xmark_ticks = sorted([x for x in set(xmark_ticks)])
+    xmark_ticks.remove(25.0)
+    xmark_ticks.remove(15.0)
+    xmark_ticks.remove(40.0)
+    return xmark_ticks
+
+
+def apply_axes_formatting(axes, xmark_ticks):
+    """ Default axes formatting. """
+    # For each loss percent, set a mark on x-axis.
+    axes.set_xticks(xmark_ticks)
+
+    # Make the X-Axis label look vertical to make them more readable.
+    axes.set_xticklabels(axes.xaxis.get_majorticklabels(),
+                         rotation=90, fontsize=14)
+
+    # Format the Y-Axis too
+    axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=14)
+
+    axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+
+
 def make_figure_8_plot(logfile):
     """Generate high quality plot of data to reproduce figure 8.
 
@@ -55,23 +81,9 @@ def make_figure_8_plot(logfile):
 
     plt.xscale('log')
 
-    xmark_ticks = sorted([x for x in set(xmark_ticks)])  # deduplicate
-    xmark_ticks.remove(25.0)
-    xmark_ticks.remove(15.0)
-    xmark_ticks.remove(40.0)
+    deduplicate_xmark_ticks(xmark_ticks)
 
-    # For each loss percent, set a mark on x-axis.
-    axes.set_xticks(xmark_ticks)
-
-    # Make the X-Axis label look vertical to make them more readable.
-    axes.set_xticklabels(axes.xaxis.get_majorticklabels(),
-                         rotation=90, fontsize=14)
-
-    # Format the Y-Axis too
-    axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=14)
-
-    axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    apply_axes_formatting(axes, xmark_ticks)
 
     # Plot Graph tile and axis labels.
     # plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
