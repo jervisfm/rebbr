@@ -88,3 +88,10 @@ def make_figure_8_plot(logfile):
     plt.savefig("figure8.png")
     # Then show the figure interactively
     plt.show()
+
+
+def main():
+    debug_print_verbose('Generating Plots')
+
+if __name__ == '__main__':
+    main()
