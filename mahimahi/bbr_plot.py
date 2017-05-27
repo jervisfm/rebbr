@@ -67,7 +67,10 @@ def parse_results_csv(input_csv_file):
 
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
 
+    Returns a result which an in-memory dictionary of format:
+    CongestionControlAlgorithm -> {"loss": [...], "goodput": [...], "rtt" : [...], "bandwidth": [...] }
     """
+
     # Parse CSV File into in-memory result dictionary. Format is like:
     # CongestionControl -> {"loss": [], "goodput": [], ... }
     results = {}
@@ -78,7 +81,6 @@ def parse_results_csv(input_csv_file):
 
         for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
-            xmark_ticks.append(loss_percent)
 
             if not cc:
                 debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
@@ -107,7 +109,6 @@ def make_figure_8_plot(logfile):
     results = {}
     cubic = {"loss": [], "goodput": []}
     bbr = {"loss": [], "goodput": []}
-    xmark_ticks = []
 
     # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
     # We prefer to use explicit keyword syntax to help code readability.
