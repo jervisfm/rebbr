@@ -16,7 +16,7 @@ LOG_FILE=experiment3.csv
 rm -f $LOG_FILE
 
 # Run experiment.
-echo "Running  experiment 3: effect of RTT"
+echo "Running experiment 3: effect of RTT"
 
 for cc in $CONGESTION_CONTROL; do
   for loss_rate in $LOSS_RATES; do
