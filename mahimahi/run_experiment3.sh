@@ -22,7 +22,7 @@ for cc in $CONGESTION_CONTROL; do
   for loss_rate in $LOSS_RATES; do
     for rtt in $RTTS_MS; do
       echo "Executing trial with cc=$cc Loss rate: $loss_rate RTT (ms): $rtt ..."
-      ./bbr_experiment.py --cc=$cc --loss=$loss_rate --rtt=$rtt $@ >> $LOG_FILE
+      ./bbr_experiment.py --cc=$cc --loss=$loss_rate --rtt=$rtt --output_file=$LOG_FILE $@
     done
   done
 done

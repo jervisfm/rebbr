@@ -19,6 +19,6 @@ echo "Running experiment 2: Effect of different Congestion Control Algorithms."
 for cc in $CONGESTION_CONTROL; do
   for loss_rate in $LOSS_RATES; do
     echo "Executing trial with cc=$cc Loss rate: $loss_rate ..."
-    ./bbr_experiment.py --cc=$cc --loss=$loss_rate $@ >> $LOG_FILE
+    ./bbr_experiment.py --cc=$cc --loss=$loss_rate --output_file=$LOG_FILE $@
   done
 done
