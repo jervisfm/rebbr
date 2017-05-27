@@ -7,6 +7,7 @@ import random
 import socket
 import string
 import sys
+import time
 
 
 TCP_CONGESTION = 13
@@ -28,5 +29,17 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     # Generate a random message of SIZE a single time. Send this over and over.
     msg = ''.join(random.choice(string.ascii_letters) for _ in range(size))
 
+    msg_count = 1
+    # It can take different amount of time  to send message depending on network
+    # configurations. Thus, log progress based on time intervals.
+    last_log_time_secs = time.time()
+    log_interval_secs = 5
+    debug_print_verbose("Client Starting Sending Messages...")
     while True:
+        time_now_secs = time.time()
+        delta_secs = time_now_secs - last_log_time_secs
+        if (delta_secs > log_interval_secs):
+            debug_print_verbose("Sending Message %d" % msg_count)
+            last_log_time_secs = time_now_secs
         s.send(msg)
+        msg_count += 1
