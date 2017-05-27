@@ -6,6 +6,9 @@ import matplotlib
 from matplotlib import pyplot as plt
 
 
+# Flag to control whether interactive plots should be shown.
+SHOW_INTERACTIVE_PLOTS = False
+
 def make_figure_8_plot(logfile):
     """Generate high quality plot of data to reproduce figure 8.
 
@@ -86,12 +89,21 @@ def make_figure_8_plot(logfile):
 
     # Save the figure first.
     plt.savefig("figure8.png")
-    # Then show the figure interactively
-    plt.show()
+    # May be show the figure interactively
+    if SHOW_INTERACTIVE_PLOTS:
+        plt.show()
 
 
 def main():
     debug_print_verbose('Generating Plots')
+    make_figure_8_plot('data/figure8_experiment.csv')
+    #make_experiment1_plot('data/experiment1.csv')
+    #make_experiment2_plot('data/experiment2.csv')
+    #make_experiment3_plot('data/expeirment3.csv')
+
+    # TODO(jmuindi): Add plot for experiment 4 (testing against verizon cellular link)
+    # when we have data collection for it.
+                          
 
 if __name__ == '__main__':
     main()
