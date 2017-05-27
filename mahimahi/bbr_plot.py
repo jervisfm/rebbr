@@ -53,10 +53,10 @@ def plot_titles(plt, xaxis=None, yaxis=None, title=None):
         plt.ylabel(yaxis, size=20)
 
 
-def save_figure(plt, name)
+def save_figure(plt, name):
    """ Saves the graphic and maybe shows it interactively. """
    # Save the figure first.
-   plt.savefig("figure8.png")
+   plt.savefig(name)
    # May be show the figure interactively
    if SHOW_INTERACTIVE_PLOTS:
        plt.show()
