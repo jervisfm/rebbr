@@ -26,11 +26,6 @@ def make_figure_8_plot(logfile):
     fig_height = 5
     fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
-    # Add a subplot for CUBIC/BBR plots. See
-    # https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.subplot
-    # bbr_fig = fig.add_subplot(111)
-    # cubic_fig = fig.add_subplot(111)
-
     with open(logfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
         reader.next()  # skip header row
