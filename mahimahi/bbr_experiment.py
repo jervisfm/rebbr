@@ -33,6 +33,7 @@ class Flags(object):
     BW = "bottleneck_bandwidth"
     SIZE = "packet_size"
     HEADLESS = "headless"
+    OUTPUT_FILE = "output_file"
     parsed_args = None
 
 
@@ -92,6 +93,9 @@ def _parse_args():
     parser.add_argument('--cc', dest=Flags.CC, type=_check_cc,
                         help="Which congestion control algorithm to compare.",
                         default="cubic")
+    parser.add_argument('--output_file', dest=Flags.OUTPUT_FILE, type=str,
+                        help="If non empty, will append measurement result to this file.",
+                        default="")
     parser.add_argument('--rtt', dest=Flags.RTT, type=int,
                         help="Specify the RTT of the link in milliseconds.",
                         default=100)
@@ -164,6 +168,7 @@ def main():
     rtt = Flags.parsed_args[Flags.RTT]
     bw = Flags.parsed_args[Flags.BW]
     cc = Flags.parsed_args[Flags.CC]
+    output_file = Flags.parsed_args[Flags.OUTPUT_FILE]
 
     # Generate the trace files based on the parameter
     _generate_trace(Flags.parsed_args[Flags.TIME], bw)
@@ -202,6 +207,12 @@ def main():
     # Print the output
     results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, capacity]])
     stdout_print(results + "\n")
+
+    # Also write to output file if it's set.
+    if output_file:
+        debug_print_verbose("Appending Result output to: %s" % output_file)
+        with open(output_file, 'a') as output:
+            output.write(results + "\n")
 
     _clean_up_trace(bw)
     debug_print("Terminating driver.")
