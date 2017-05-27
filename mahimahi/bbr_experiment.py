@@ -13,12 +13,14 @@ create the corresponding figures.
 """
 
 import argparse
-from bbr_logging import debug_print, debug_print_verbose, stdout_print
+from bbr_logging import debug_print, debug_print_verbose, debug_print_error, stdout_print
 from multiprocessing import Process, Queue, Event
 import os
 from server import run_server
 import subprocess
+import sys
 
+EXIT_SUCCESS = 0
 
 class Flags(object):
     """Dictionary object to store parsed flags."""
@@ -172,13 +174,24 @@ def main():
     server_proc = Process(
         target=run_server, args=(q, e, cc, port, size))
     server_proc.start()
+    # Start client and wait for it to finish.
     client_proc = Process(target=_run_experiment,
                           args=(loss, port, cc, rtt, bw))
     client_proc.start()
-    client_proc.join()          # Wait for the client to finish
+    client_proc.join()
+    # Handle errors starting up the server.
+    if not server_proc.is_alive():
+        if server_proc.exitcode != EXIT_SUCCESS:
+            debug_print_error("Server Process Died unexpectedly. Terminating.")
+            sys.exit(-1)
+
+    # Server is still alive, signal it to shutdown.
     debug_print_verbose("Signal server to shutdown.")
-    e.set()  # signal the server to shutdown
-    server_proc.join()     # kill the server
+    e.set()
+    print type(server_proc)
+    debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()) )
+    # Wait for server to shutdown.
+    server_proc.join()
     debug_print_verbose(
         "Run complete. Server Estimated Goodput: " + str(q.get()))
     q.close()
