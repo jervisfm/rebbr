@@ -35,6 +35,24 @@ def apply_axes_formatting(axes, xmark_ticks):
     axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
 
+def plot_legend(plt):
+    """ Plots legend. """
+    # Plot Graph legend
+    plt.legend(loc='upper right', fontsize=20)
+    plt.tight_layout()
+
+def plot_titles(plt, xaxis=None, yaxis=None, title=None):
+    """Plots graph titles. """
+
+    # Plot Graph tile and axis labels as appropriate.
+    if title:
+        plt.title(title)
+    if xaxis:
+        plt.xlabel(xaxis, size=20)
+    if yaxis:
+        plt.ylabel(yaxis, size=20)
+
+
 def make_figure_8_plot(logfile):
     """Generate high quality plot of data to reproduce figure 8.
 
@@ -85,14 +103,9 @@ def make_figure_8_plot(logfile):
 
     apply_axes_formatting(axes, xmark_ticks)
 
-    # Plot Graph tile and axis labels.
-    # plt.title("ReBBR: Comparing CUBIC and BBR performance on lossy links")
-    plt.ylabel("Goodput (Mbps)", size=20)
-    plt.xlabel("Loss Rate (%) - Log Scale", size=20)
+    plot_titles(xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
 
-    # Plot Graph legend
-    plt.legend(loc='upper right', fontsize=20)
-    plt.tight_layout()
+    plot_legend(plt)
 
     # Save the figure first.
     plt.savefig("figure8.png")
