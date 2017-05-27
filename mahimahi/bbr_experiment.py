@@ -102,7 +102,7 @@ def _parse_args():
                         help="Specify the packet size in bytes.",
                         default=1024)
     parser.add_argument('--headless', dest=Flags.HEADLESS, action='store_true',
-                        help="Specify whether the Mahimahi Throughput / Queueing delay graphs come up.",
+                        help="Specify whether the Mahimahi Throughput / Queueing delay graphs come up. On Clouds VMs, you'd want to set this to true.",
                         default=False)
 
     Flags.parsed_args = vars(parser.parse_args())
