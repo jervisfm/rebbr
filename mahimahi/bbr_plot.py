@@ -19,6 +19,17 @@ def deduplicate_xmark_ticks(xmark_ticks):
     return xmark_ticks
 
 
+def get_loss_percent_xmark_ticks(results):
+    """Returns a list of x mark ticks for loss rate.
+
+    Results: this is a python dictionary of parsed bbr experiment results. """
+    output = []
+    for cc, value in results.iteritems():
+        for loss in value['loss']:
+            output.append(loss)
+    return output
+
+
 def apply_axes_formatting(axes, xmark_ticks):
     """ Default axes formatting. """
     # For each loss percent, set a mark on x-axis.
@@ -119,6 +130,7 @@ def make_figure_8_plot(logfile):
     fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
     results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
     cubic = results['cubic']
     bbr = results['bbr']
     debug_print_verbose("CUBIC: %s" % cubic)
