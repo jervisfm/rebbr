@@ -230,7 +230,7 @@ def make_experiment1_figure(logfile):
         bbr_color = bbr_bandwidth_colors[index]
 
         plt.plot(filtered_cubic['loss'], filtered_cubic['normalized_goodput'],
-                 color=cubic_color, linestyle='solid', marker='o',
+                 color=cubic_color, linestyle='dotted', marker='o',
                  markersize=7, label='CUBIC (%s Mbps)' % bandwidth_filter)
 
         plt.plot(filtered_bbr['loss'], filtered_bbr['normalized_goodput'], color=bbr_color,
