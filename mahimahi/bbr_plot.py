@@ -198,42 +198,46 @@ def make_experiment1_figure(logfile):
     debug_print_verbose("--- Generating figures for experiment 1")
 
 
-    bandwidth_list = set(cubic['bandwidth'])
+    bandwidth_filter_list = set(cubic['bandwidth'])
     
     debug_print_verbose("Bandwidth list: %s" % bandwidth_list)
 
-    # Get index that have data only for the specific bandwidths.
-    bandwidth_filter = 0.01
-    def include_predicate_fn(congestion_control, loss, goodput, rtt, bandwidth):
-        return is_same_float(bandwidth, bandwidth_filter)
-
-    filtered_result = parse_results_csv(logfile, include_predicate_fn)
-    
-    debug_print_verbose("Filtered Results : %s" % filtered_result)
-    filtered_cubic = filtered_result['cubic']
-    filtered_bbr = filtered_result['bbr']
-    
-    debug_print_verbose("CUBIC: %s" % cubic)
-    debug_print_verbose("BBR: %s" % bbr)
-    debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
-    debug_print_verbose("Filter BBR: %s" % filtered_bbr)
-
 
     matplotlib.rcParams.update({'figure.autolayout': True})
-
-    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
-             markersize=7, label='CUBIC')
-
-    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
-             markersize=7, label='BBR')
-
     plt.xscale('log')
-
     deduplicate_xmark_ticks(xmark_ticks)
-
     apply_axes_formatting(axes, xmark_ticks)
 
-    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
+    # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
+    # Need 5 colors  since we look at bandwidths: [0.01, 0.1, 1.0,  10.03, 100.27 ]
+    cubic_bandwidth_colors = ['blue', 'purple', 'green', 'yellow', 'pink']
+    bbr_bandwidth_colors = ['red',    'brown', 'crimson', 'darkcyan', 'olive']
+    for index, bandwidth_filter in enumerate(bandwidth_filter_list):
+        def include_predicate_fn(congestion_control, loss, goodput, rtt, bandwidth):
+            return is_same_float(bandwidth, bandwidth_filter)
+
+        filtered_result = parse_results_csv(logfile, include_predicate_fn)
+        filtered_cubic = filtered_result['cubic']
+        filtered_bbr = filtered_result['bbr']
+        debug_print_verbose("Filtered Results : %s" % filtered_result)
+        debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
+        debug_print_verbose("Filter BBR: %s" % filtered_bbr)
+
+        cubic_color = cubic_bandwidth_colors[index]
+        bbr_color = bbr_bandwidth_colors[index]
+
+        plt.plot(filtered_cubic['loss'], filtered_cubic['goodput'],
+                 color=cubic_color, linestyle='solid', marker='o',
+                 markersize=7, label='CUBIC (%s Mbps)' % bandwidth_filter)
+
+        plt.plot(filtered_bbr['loss'], filtered_bbr['goodput'], color=bbr_color,
+                 linestyle='solid', marker='x',
+                 markersize=7, label='BBR (%s Mbps)' % bandwidth_filter)
+
+    plot_titles(plt,
+                xaxis="Loss Rate (%) - Log Scale",
+                yaxis="Goodput (Mbps)",
+                title="Comparisons CUBIC and BBR performance across various loss rates and bandwidths")
 
     plot_legend(plt)
 
