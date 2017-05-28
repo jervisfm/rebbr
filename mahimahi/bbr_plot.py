@@ -271,10 +271,17 @@ def make_experiment2_figure(logfile):
     # cubic bbr bic vegas westwood reno
     cubic = results['cubic']
     bbr = results['bbr']
+    
+    # Fake data
+    # TODO: DELETE ME.
+    results['bic'] = results['vegas'] =  results['westwood'] = results['reno'] = results['cubic']
+
     bic = results['bic']
     vegas = results['vegas']
     westwood = results['westwood']
     reno = results['reno']
+
+    
     
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" % bbr)
