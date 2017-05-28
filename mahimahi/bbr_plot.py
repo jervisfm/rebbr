@@ -281,8 +281,6 @@ def make_experiment2_figure(logfile):
     westwood = results['westwood']
     reno = results['reno']
 
-    
-    
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" % bbr)
     debug_print_verbose("BIC: %s" % bic)
@@ -306,10 +304,10 @@ def make_experiment2_figure(logfile):
     plt.plot(vegas['loss'], vegas['goodput'], color='green', linestyle='solid', marker='s',
              markersize=7, label='VEGAS')
 
-    plt.plot(westwood['loss'], westwood['goodput'], color='green', linestyle='solid', marker='s',
+    plt.plot(westwood['loss'], westwood['goodput'], color='brown', linestyle='solid', marker='s',
              markersize=7, label='WESTWOOD')
 
-    plt.plot(reno['loss'], reno['goodput'], color='green', linestyle='solid', marker='s',
+    plt.plot(reno['loss'], reno['goodput'], color='darkcyan', linestyle='solid', marker='s',
              markersize=7, label='RENO')
 
 
