@@ -118,6 +118,7 @@ def _parse_args():
 def _parse_mahimahi_log():
     # Piped to /dev/null because stdout is just the SVG generated.
     # We just want the throutput information, which is stderr.
+    debug_print_verbose("Parsing Mahimahi logs...")
     command = ("mm-throughput-graph 10 /tmp/mahimahi_log > /dev/null")
     output = subprocess.check_output(
         command, shell=True, stderr=subprocess.STDOUT)
@@ -193,10 +194,10 @@ def main():
     # Server is still alive, signal it to shutdown.
     debug_print_verbose("Signal server to shutdown.")
     e.set()
-    print type(server_proc)
+
     debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()) )
-    # Wait for server to shutdown.
-    server_proc.join()
+    # Wait for server to shutdown, upto some timeout.
+    server_proc.join(timeout=60)
     debug_print_verbose(
         "Run complete. Server Estimated Goodput: " + str(q.get()))
     q.close()
