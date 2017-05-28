@@ -72,7 +72,7 @@ def plot_titles(plt, xaxis=None, yaxis=None, title=None):
 def save_figure(plt, name):
    """ Saves the graphic and maybe shows it interactively. """
    # Save the figure first.
-   plt.savefig(name)
+   plt.savefig(name, bbox_inches='tight')
    # May be show the figure interactively
    if SHOW_INTERACTIVE_PLOTS:
        plt.show()
@@ -242,7 +242,9 @@ def make_experiment1_figure(logfile):
                 yaxis="Goodput (Mbps)",
                 title="Comparisons CUBIC and BBR performance across various loss rates and bandwidths")
 
-    plot_legend(plt)
+    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
+
 
     save_figure(plt, name="experiment1_figure.png")
 
