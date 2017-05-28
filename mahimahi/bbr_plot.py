@@ -325,6 +325,81 @@ def make_experiment2_figure(logfile):
     save_figure(plt, name="experiment2_figure.png")
 
 
+
+
+def make_experiment3_figure(logfile):
+    """Generate high quality plot of data for Experiment 3.
+
+    Experiment 3 is looking at effects of various RTTs values  between CUBIC and
+    BBR.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    """
+    results = {}
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # TODO(jmuindi): Check that this graph generation works.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
+    cubic = results['cubic']
+    bbr = results['bbr']
+    debug_print_verbose("--- Generating figures for experiment 3")
+
+
+    rtt_filter_list = set(cubic['rtt'])
+
+    debug_print_verbose("RTT list: %s" % rtt_filter_list)
+
+
+    matplotlib.rcParams.update({'figure.autolayout': True})
+    plt.xscale('log')
+    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
+    apply_axes_formatting(axes, xmark_ticks)
+
+    # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
+    # Need 5 colors  since we look at 5 RTT values (ms): [2 10 100 1000 10000]
+    cubic_rtt_colors = ['blue', 'purple', 'green', 'yellow', 'pink']
+    bbr_rtt_colors = ['red',    'brown', 'crimson', 'darkcyan', 'olive']
+    for index, rtt_filter in enumerate(rtt_filter_list):
+        def include_predicate_fn(congestion_control, loss, goodput, rtt, bandwidth):
+            return is_same_float(rtt, rtt_filter)
+
+        filtered_result = parse_results_csv(logfile, include_predicate_fn)
+        filtered_cubic = filtered_result['cubic']
+        filtered_bbr = filtered_result['bbr']
+        debug_print_verbose("Filtered Results : %s" % filtered_result)
+        debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
+        debug_print_verbose("Filter BBR: %s" % filtered_bbr)
+
+        cubic_color = cubic_rtt_colors[index]
+        bbr_color = bbr_rtt_colors[index]
+
+        plt.plot(filtered_cubic['loss'], filtered_cubic['goodput'],
+                 color=cubic_color, linestyle='dotted', marker='o',
+                 markersize=7, label='CUBIC (%s ms RTT)' % rtt_filter)
+
+        plt.plot(filtered_bbr['loss'], filtered_bbr['goodput'], color=bbr_color,
+                 linestyle='solid', marker='x',
+                 markersize=7, label='BBR (%s ms RTT)' % rtt_filter)
+
+    plot_titles(plt,
+                xaxis="Loss Rate (%) - Log Scale",
+                yaxis="Goodput (Mbps)",
+                title="Comparisons CUBIC and BBR performance across various loss rates and RTT")
+
+    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
+
+
+    save_figure(plt, name="experiment3_figure.png")
     
 def main():
     debug_print_verbose('Generating Plots')
