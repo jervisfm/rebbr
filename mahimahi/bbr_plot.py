@@ -104,6 +104,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
         for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
             bandwidth = float(bandwidth)
+            normalized_goodput = goodput / bandwidth
             if not cc:
                 debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
                 continue
@@ -124,6 +125,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
             value_dict['goodput'].append(goodput)
             value_dict['rtt'].append(rtt)
             value_dict['bandwidth'].append(bandwidth)
+            value_dict['normalized_goodput'].append(normalized_goodput)
             results[cc] = value_dict
     return results
 
