@@ -20,7 +20,7 @@ when compared to [CUBIC](https://en.wikipedia.org/wiki/CUBIC_TCP). This figure i
 # Our Reproduced Figure
 The figure below is the one we're able to reproduce by replicating the experiment to compare CUBIC and BBR performance
 over lossy links.
-![rebbr_figure8](mahimahi/figure8.png "ReBBR Figure 8")
+![rebbr_figure8](mahimahi/figures/figure8.png "ReBBR Figure 8")
 
 # Setup
 
