@@ -157,6 +157,54 @@ def make_figure_8_plot(logfile):
     save_figure(plt, name="figure8.png")
 
 
+def make_experiment1_figure(logfile):
+    """Generate high quality plot of data for Experiment 1.
+
+    Experiment 1 is looking at effects of various bandwithd between CUBIC and
+    BBR.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    """
+    results = {}
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
+    cubic = results['cubic']
+    bbr = results['bbr']
+    debug_print_verbose("--- Generating figures for experiment 1")
+
+
+    debug_print_verbose("CUBIC: %s" % cubic)
+    debug_print_verbose("BBR: %s" % bbr)
+
+    matplotlib.rcParams.update({'figure.autolayout': True})
+
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
+             markersize=7, label='CUBIC')
+
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
+             markersize=7, label='BBR')
+
+    plt.xscale('log')
+
+    deduplicate_xmark_ticks(xmark_ticks)
+
+    apply_axes_formatting(axes, xmark_ticks)
+
+    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
+
+    plot_legend(plt)
+
+    save_figure(plt, name="experiment1_figure.png")
+
 
 def main():
     debug_print_verbose('Generating Plots')
