@@ -72,11 +72,17 @@ def save_figure(plt, name):
    if SHOW_INTERACTIVE_PLOTS:
        plt.show()
 
-def parse_results_csv(input_csv_file):
+def parse_results_csv(input_csv_file, include_predicate_fn=None):
     """ Reads input csv file from bbr experiment and converts it into a python dictionary
        convenient for plotting figures.
 
+    input_csv_file: Input CSV file to read.
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+
+    include_predicate_fn: Optional. When present, it's a function called to determine
+    whether current record should be included. Function is given a tuple of
+    (congestion_control, loss, goodput, rtt, bandwidth) and should return a boolean. True
+    for inclusion; False for exclusion.
 
     Returns a result which an in-memory dictionary of format:
     CongestionControlAlgorithm -> {"loss": [...], "goodput": [...], "rtt" : [...], "bandwidth": [...] }
@@ -96,6 +102,11 @@ def parse_results_csv(input_csv_file):
             if not cc:
                 debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
                 continue
+
+            # Skip rows that are filt
+            if include_predicate_fn:
+                if not include_predicate_fn(cc, loss, goodput, rtt, bandwidth):
+                    continue
 
             if cc in results:
                 # Re-use existing dictionary
@@ -182,6 +193,10 @@ def make_experiment1_figure(logfile):
     debug_print_verbose("--- Generating figures for experiment 1")
 
 
+    bandwidth_list = set(cubic['bandwidth'])
+    
+    debug_print_verbose("Bandwidth list: %s" % bandwidth_list)
+    
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" % bbr)
 
@@ -208,10 +223,10 @@ def make_experiment1_figure(logfile):
 
 def main():
     debug_print_verbose('Generating Plots')
-    make_figure_8_plot('data/figure8_experiment.csv')
-    #make_experiment1_plot('data/experiment1.csv')
-    #make_experiment2_plot('data/experiment2.csv')
-    #make_experiment3_plot('data/expeirment3.csv')
+    #make_figure_8_plot('data/figure8_experiment.csv')
+    make_experiment1_figure('data/experiment1.csv')
+    #make_experiment2_figure('data/experiment2.csv')
+    #make_experiment3_figure('data/expeirment3.csv')
 
     # TODO(jmuindi): Add plot for experiment 4 (testing against verizon cellular link)
     # when we have data collection for it.
