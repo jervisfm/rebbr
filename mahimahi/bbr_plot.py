@@ -104,6 +104,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
         for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
             bandwidth = float(bandwidth)
+            goodput = float(goodput)
             normalized_goodput = goodput / bandwidth
             if not cc:
                 debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
@@ -119,7 +120,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
                 value_dict = results[cc]
             else:
                 # Create a new one.
-                value_dict = { "loss" : [], "goodput": [], "rtt": [], "bandwidth": [] }
+                value_dict = { "loss" : [], "goodput": [], "normalized_goodput": [], "rtt": [], "bandwidth": [] }
 
             value_dict['loss'].append(loss_percent)
             value_dict['goodput'].append(goodput)
@@ -228,11 +229,11 @@ def make_experiment1_figure(logfile):
         cubic_color = cubic_bandwidth_colors[index]
         bbr_color = bbr_bandwidth_colors[index]
 
-        plt.plot(filtered_cubic['loss'], filtered_cubic['goodput'],
+        plt.plot(filtered_cubic['loss'], filtered_cubic['normalized_goodput'],
                  color=cubic_color, linestyle='solid', marker='o',
                  markersize=7, label='CUBIC (%s Mbps)' % bandwidth_filter)
 
-        plt.plot(filtered_bbr['loss'], filtered_bbr['goodput'], color=bbr_color,
+        plt.plot(filtered_bbr['loss'], filtered_bbr['normalized_goodput'], color=bbr_color,
                  linestyle='solid', marker='x',
                  markersize=7, label='BBR (%s Mbps)' % bandwidth_filter)
 
