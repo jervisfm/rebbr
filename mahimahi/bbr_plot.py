@@ -200,7 +200,7 @@ def make_experiment1_figure(logfile):
 
     bandwidth_filter_list = set(cubic['bandwidth'])
     
-    debug_print_verbose("Bandwidth list: %s" % bandwidth_list)
+    debug_print_verbose("Bandwidth list: %s" % bandwidth_filter_list)
 
 
     matplotlib.rcParams.update({'figure.autolayout': True})
