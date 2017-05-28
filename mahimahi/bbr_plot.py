@@ -30,6 +30,11 @@ def get_loss_percent_xmark_ticks(results):
     return output
 
 
+def is_same_float(a, b, tolerance=1e-09):
+    """ Returns true if the two floats numbers (a,b) are almost equal."""
+    abs_diff = abs(a-b)
+    return abs_diff < tolerance
+
 def apply_axes_formatting(axes, xmark_ticks):
     """ Default axes formatting. """
     # For each loss percent, set a mark on x-axis.
@@ -98,7 +103,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
 
         for (cc, loss, goodput, rtt, bandwidth) in reader:
             loss_percent = float(loss) * 100
-
+            bandwidth = float(bandwidth)
             if not cc:
                 debug_print_warn("Skipping a log entry that's missing a Congestion Control Algorithm")
                 continue
@@ -196,9 +201,23 @@ def make_experiment1_figure(logfile):
     bandwidth_list = set(cubic['bandwidth'])
     
     debug_print_verbose("Bandwidth list: %s" % bandwidth_list)
+
+    # Get index that have data only for the specific bandwidths.
+    bandwidth_filter = 0.01
+    def include_predicate_fn(congestion_control, loss, goodput, rtt, bandwidth):
+        return is_same_float(bandwidth, bandwidth_filter)
+
+    filtered_result = parse_results_csv(logfile, include_predicate_fn)
+    
+    debug_print_verbose("Filtered Results : %s" % filtered_result)
+    filtered_cubic = filtered_result['cubic']
+    filtered_bbr = filtered_result['bbr']
     
     debug_print_verbose("CUBIC: %s" % cubic)
     debug_print_verbose("BBR: %s" % bbr)
+    debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
+    debug_print_verbose("Filter BBR: %s" % filtered_bbr)
+
 
     matplotlib.rcParams.update({'figure.autolayout': True})
 
