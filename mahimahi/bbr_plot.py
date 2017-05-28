@@ -310,8 +310,6 @@ def make_experiment2_figure(logfile):
     plt.plot(reno['loss'], reno['goodput'], color='darkcyan', linestyle='solid', marker='s',
              markersize=7, label='RENO')
 
-
-
     plt.xscale('log')
 
     xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
