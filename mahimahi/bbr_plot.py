@@ -239,7 +239,7 @@ def make_experiment1_figure(logfile):
 
     plot_titles(plt,
                 xaxis="Loss Rate (%) - Log Scale",
-                yaxis="Goodput (Mbps)",
+                yaxis="Normalized Goodput",
                 title="Comparisons CUBIC and BBR performance across various loss rates and bandwidths")
 
     plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
