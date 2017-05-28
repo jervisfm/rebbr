@@ -249,11 +249,85 @@ def make_experiment1_figure(logfile):
     save_figure(plt, name="experiment1_figure.png")
 
 
+def make_experiment2_figure(logfile):
+    """Generate high quality plot of data to reproduce figure for experiment 2:
+    Looking at performance of different congestion control algorithms.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    """
+    results = {}
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
+    # We gather results for the following congestion control algoirhtms:
+    # cubic bbr bic vegas westwood reno
+    cubic = results['cubic']
+    bbr = results['bbr']
+    bic = results['bic']
+    vegas = results['vegas']
+    westwood = results['westwood']
+    reno = results['reno']
+    
+    debug_print_verbose("CUBIC: %s" % cubic)
+    debug_print_verbose("BBR: %s" % bbr)
+    debug_print_verbose("BIC: %s" % bic)
+    debug_print_verbose("VEGAS: %s" % vegas)
+    debug_print_verbose("WESTWOOD: %s" % westwood)
+    debug_print_verbose("RENO: %s" % reno)
+    
+
+    matplotlib.rcParams.update({'figure.autolayout': True})
+
+    # Plot the results of the different congestion control algorithms
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
+             markersize=7, label='CUBIC')
+
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
+             markersize=7, label='BBR')
+
+    plt.plot(bic['loss'], bic['goodput'], color='purple', linestyle='solid', marker='s',
+             markersize=7, label='BIC')
+
+    plt.plot(vegas['loss'], vegas['goodput'], color='green', linestyle='solid', marker='s',
+             markersize=7, label='VEGAS')
+
+    plt.plot(westwood['loss'], westwood['goodput'], color='green', linestyle='solid', marker='s',
+             markersize=7, label='WESTWOOD')
+
+    plt.plot(reno['loss'], reno['goodput'], color='green', linestyle='solid', marker='s',
+             markersize=7, label='RENO')
+
+
+
+    plt.xscale('log')
+
+    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
+
+    apply_axes_formatting(axes, xmark_ticks)
+
+    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale",
+                yaxis="Goodput (Mbps)",
+                title="Comparison Performance of different Congestion Control Algorithms over Lossy Links")
+
+    plot_legend(plt)
+
+    save_figure(plt, name="experiment2_figure.png")
+
+
+    
 def main():
     debug_print_verbose('Generating Plots')
     #make_figure_8_plot('data/figure8_experiment.csv')
-    make_experiment1_figure('data/experiment1.csv')
-    #make_experiment2_figure('data/experiment2.csv')
+    #make_experiment1_figure('data/experiment1.csv')
+    make_experiment2_figure('data/experiment2.csv')
     #make_experiment3_figure('data/expeirment3.csv')
 
     # TODO(jmuindi): Add plot for experiment 4 (testing against verizon cellular link)
