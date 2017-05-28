@@ -208,7 +208,7 @@ def make_experiment1_figure(logfile):
 
     matplotlib.rcParams.update({'figure.autolayout': True})
     plt.xscale('log')
-    deduplicate_xmark_ticks(xmark_ticks)
+    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
     apply_axes_formatting(axes, xmark_ticks)
 
     # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
