@@ -6,7 +6,7 @@ set -x
 
 FILES="figure8.png experiment1_figure.png experiment2_figure.png experiment3_figure.png"
 
-for file in FILES; do
+for file in $FILES; do
   echo "Copying $file..."
   cp -f $file figures/$file
 done
