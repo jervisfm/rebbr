@@ -212,9 +212,14 @@ def main():
     # Also write to output file if it's set.
     if output_file:
         debug_print_verbose("Appending Result output to: %s" % output_file)
-        # TODO(jmuindi): If output file newly created and does not exist, add a CSV Header line.
-        with open(output_file, 'a') as output:
-            output.write(results + "\n")
+        if os.path.exists(output_file):
+            with open(output_file, 'a') as output:
+                output.write(results + "\n")
+        else:
+            with open(output_file, 'a') as output:
+                header_line = "congestion_control, loss_rate_percent, goodput_Mbps, rtt_ms, bandwidth_Mbps"
+                output.write(header_line + "\n")
+                output.write(results + "\n")
 
     _clean_up_trace(bw)
     debug_print("Terminating driver.")
