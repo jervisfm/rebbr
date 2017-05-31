@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 # Flag to control whether interactive plots should be shown.
-SHOW_INTERACTIVE_PLOTS = False
+SHOW_INTERACTIVE_PLOTS = True
 
 def deduplicate_xmark_ticks(xmark_ticks):
     """Removes redundant ticks for the given xmark_ticks. """
@@ -273,10 +273,6 @@ def make_experiment2_figure(logfile):
     # cubic bbr bic vegas westwood reno
     cubic = results['cubic']
     bbr = results['bbr']
-    
-    # Fake data
-    # TODO: DELETE ME.
-    results['bic'] = results['vegas'] =  results['westwood'] = results['reno'] = results['cubic']
 
     bic = results['bic']
     vegas = results['vegas']
