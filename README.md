@@ -89,6 +89,19 @@ $ sudo apt-get upgrade
 From here on out, you can safely follow instructions from: https://github.com/google/bbr/blob/master/Documentation/bbr-quick-start.md#obtain-kernel-sources-with-tcp-bbr
 
 
+### Useful Commands
+
+#### Start the VM Instance
+```
+gcloud compute   instances  start bbrtest1
+```
+
+#### Stop the VM Instance
+```
+gcloud compute   instances  start bbrtest1
+```
+
+
 ### Running Appendix Notes:
 
 Executing vanilla gcloud compute after install Gcloud SDK command results in an error:
