@@ -217,7 +217,7 @@ def main():
                 output.write(results + "\n")
         else:
             with open(output_file, 'a') as output:
-                header_line = "congestion_control, loss_rate_percent, goodput_Mbps, rtt_ms, bandwidth_Mbps"
+                header_line = "congestion_control, loss_rate, goodput_Mbps, rtt_ms, bandwidth_Mbps"
                 output.write(header_line + "\n")
                 output.write(results + "\n")
 
