@@ -326,7 +326,8 @@ def make_experiment2_figure(logfile):
                 yaxis="Goodput (Mbps)",
                 title="Comparison Performance of different Congestion Control Algorithms over Lossy Links")
 
-    plot_legend(plt)
+    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
 
     save_figure(plt, name="experiment2_figure.png")
 
