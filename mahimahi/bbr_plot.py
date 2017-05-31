@@ -195,6 +195,7 @@ def make_experiment1_figure(logfile):
     fig, axes = plt.subplots(figsize=(fig_width, fig_height))
 
     results = parse_results_csv(logfile)
+    debug_print_verbose('Parsed Results: %s' % results)
     xmark_ticks = get_loss_percent_xmark_ticks(results)
     cubic = results['cubic']
     bbr = results['bbr']
@@ -220,9 +221,9 @@ def make_experiment1_figure(logfile):
             return is_same_float(bandwidth, bandwidth_filter)
 
         filtered_result = parse_results_csv(logfile, include_predicate_fn)
+        debug_print_verbose("Filtered Results : %s" % filtered_result)
         filtered_cubic = filtered_result['cubic']
         filtered_bbr = filtered_result['bbr']
-        debug_print_verbose("Filtered Results : %s" % filtered_result)
         debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
         debug_print_verbose("Filter BBR: %s" % filtered_bbr)
 
@@ -403,10 +404,10 @@ def make_experiment3_figure(logfile):
     
 def main():
     debug_print_verbose('Generating Plots')
-    make_figure_8_plot('data/figure8_experiment.csv')
-    make_experiment1_figure('data/experiment1.csv')
-    make_experiment2_figure('data/experiment2.csv')
-    make_experiment3_figure('data/expeirment3.csv')
+    #make_figure_8_plot('data/figure8_experiment.csv')
+    #make_experiment1_figure('data/experiment1.csv')
+    #make_experiment2_figure('data/experiment2.csv')
+    make_experiment3_figure('data/experiment3.csv')
 
     # TODO(jmuindi): Add plot for experiment 4 (testing against verizon cellular link)
     # when we have data collection for it.
