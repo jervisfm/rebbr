@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 # Flag to control whether interactive plots should be shown.
-SHOW_INTERACTIVE_PLOTS = True
+SHOW_INTERACTIVE_PLOTS = False
 
 def deduplicate_xmark_ticks(xmark_ticks):
     """Removes redundant ticks for the given xmark_ticks. """
