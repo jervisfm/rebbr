@@ -402,8 +402,8 @@ def make_experiment3_figure(logfile):
 def main():
     debug_print_verbose('Generating Plots')
     #make_figure_8_plot('data/figure8_experiment.csv')
-    #make_experiment1_figure('data/experiment1.csv')
-    make_experiment2_figure('data/experiment2.csv')
+    make_experiment1_figure('data/experiment1.csv')
+    #make_experiment2_figure('data/experiment2.csv')
     #make_experiment3_figure('data/experiment3.csv')
 
     # TODO(jmuindi): Add plot for experiment 4 (testing against verizon cellular link)
