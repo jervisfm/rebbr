@@ -1,3 +1,4 @@
+congestion_control, loss_rate, goodput_Mbps, rtt_ms, bandwidth_Mbps
 cubic, 1e-05, 80.55, 100, 100.27
 cubic, 0.0001, 22.65, 100, 100.27
 cubic, 0.001, 6.65, 100, 100.27
