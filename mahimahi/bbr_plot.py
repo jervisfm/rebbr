@@ -203,7 +203,15 @@ def make_experiment1_figure(logfile):
     debug_print_verbose("--- Generating figures for experiment 1")
 
 
-    bandwidth_filter_list = set(cubic['bandwidth'])
+    # Mahimahi bandwidth values can occasionally vary as much as +/- 0.01. See https://goo.gl/bX3b1U
+    # To ensure filtering works properly, only include bandwidths common to both.
+    cubic_bandwidth_filter_list = set(cubic['bandwidth'])
+    bbr_bandwidth_filter_list = set(bbr['bandwidth'])
+    bandwidth_filter_list = cubic_bandwidth_filter_list.intersection(bbr_bandwidth_filter_list)
+
+    if bbr_bandwidth_filter_list != cubic_bandwidth_filter_list:
+        debug_print_error("BBR and CUBIC bandwidth filter lists differ. Some data points MAY NOT be plotted. "
+                          "BBR: %s CUBIC: %s" % (bbr_bandwidth_filter_list, cubic_bandwidth_filter_list))
     
     debug_print_verbose("Bandwidth list: %s" % bandwidth_filter_list)
 
@@ -222,7 +230,7 @@ def make_experiment1_figure(logfile):
             return is_same_float(bandwidth, bandwidth_filter)
 
         filtered_result = parse_results_csv(logfile, include_predicate_fn)
-        debug_print_verbose("Filtered Results : %s" % filtered_result)
+        debug_print_verbose("Filtered Results %s : %s" % (bandwidth_filter, filtered_result))
         filtered_cubic = filtered_result['cubic']
         filtered_bbr = filtered_result['bbr']
         debug_print_verbose("Filter CUBIC: %s" % filtered_cubic)
