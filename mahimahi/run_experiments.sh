@@ -14,3 +14,6 @@ set -e # Stop if any error occurs.
 
 # Plot the results.
 ./bbr_plot.py
+
+# Copy over the data plots
+./copy_figures.sh
