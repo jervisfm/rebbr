@@ -212,6 +212,7 @@ def main():
     # Also write to output file if it's set.
     if output_file:
         debug_print_verbose("Appending Result output to: %s" % output_file)
+        # TODO(jmuindi): If output file newly created and does not exist, add a CSV Header line.
         with open(output_file, 'a') as output:
             output.write(results + "\n")
 
