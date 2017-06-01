@@ -50,7 +50,7 @@ def apply_axes_formatting(axes, xmark_ticks):
     # Format the Y-Axis too
     axes.set_yticklabels(axes.yaxis.get_majorticklabels(), fontsize=14)
 
-    axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axes.get_xaxis().set_major_formatter(matplotlib.ticker.FormatStrFormatter('%g'))
     axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
 
