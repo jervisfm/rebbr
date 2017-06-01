@@ -132,6 +132,7 @@ def _parse_mahimahi_log():
     output = subprocess.check_output(
         command, shell=True, stderr=subprocess.STDOUT)
     output = output.split('\n')
+    debug_print_verbose(output)
     capacity = float(output[0].split(' ')[2])
     goodput = float(output[1].split(' ')[2])
     q_delay = float(output[2].split(' ')[5])

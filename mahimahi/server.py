@@ -25,7 +25,6 @@ def _handle_connection(q, e, conn, size, cc):
     debug_print_verbose("Size: " + str(size) + " bytes")
     debug_print_verbose("Time: " + str(elapsed_time))
     goodput = (num_msg * size * 8) / elapsed_time / 1e6
-    debug_print("Goodput: " + str(goodput))
 
     # Send the Goodput back to the master
     q.put(str(goodput))

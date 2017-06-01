@@ -1,7 +1,23 @@
 #!/bin/bash
 
-set +x
 # This script simple runs an experiment to analyze
 # performance BBR vs CUBIC under an emulated Verizon cell link.
 
-# TODO: implement if we still have time.
+set -x # Enable logging of executed commands.
+set -e # Stop if any error occurs.
+
+LOSS_RATES="0.001 0.01 0.1 1 2 5 10 15 20 25 30 40 50"
+CONGESTION_CONTROL="cubic bbr"
+LOG_FILE=experiment4.csv
+
+# Clear any existing data.
+rm -f $LOG_FILE
+
+# Run experiment.
+echo "Running Experiment 4: Verizon LTE Trace."
+for cc in $CONGESTION_CONTROL; do
+  for loss_rate in $LOSS_RATES; do
+    echo "Executing trial with cc=$cc Loss rate: $loss_rate ..."
+    ./bbr_experiment.py --cc=$cc --loss=$loss_rate --traceup traces/Verizon-LTE-short.up --tracedown traces/Verizon-LTE-short.down --output_file=$LOG_FILE $@
+  done
+done
