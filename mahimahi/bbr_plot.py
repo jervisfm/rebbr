@@ -4,7 +4,7 @@ from bbr_logging import debug_print, debug_print_verbose, debug_print_error, deb
 import csv
 import matplotlib
 from matplotlib import pyplot as plt
-
+import os
 
 # Flag to control whether interactive plots should be shown.
 SHOW_INTERACTIVE_PLOTS = False
@@ -178,7 +178,7 @@ def make_figure_8_plot(logfile):
 
     plot_legend(plt)
 
-    save_figure(plt, name="figure8.png")
+    save_figure(plt, name="figures/figure8.png")
 
 
 def make_experiment4_figure(logfile):
@@ -221,7 +221,7 @@ def make_experiment4_figure(logfile):
 
     plot_legend(plt)
 
-    save_figure(plt, name="experiment4.png")
+    save_figure(plt, name="figures/experiment4.png")
 
 
 def make_experiment1_figure(logfile):
@@ -304,7 +304,7 @@ def make_experiment1_figure(logfile):
     plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
-    save_figure(plt, name="experiment1_figure.png")
+    save_figure(plt, name="figures/experiment1.png")
 
 
 def make_experiment2_figure(logfile):
@@ -376,7 +376,7 @@ def make_experiment2_figure(logfile):
     plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
-    save_figure(plt, name="experiment2_figure.png")
+    save_figure(plt, name="figures/experiment2.png")
 
 
 def make_experiment3_figure(logfile):
@@ -448,12 +448,16 @@ def make_experiment3_figure(logfile):
     plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
     plt.tight_layout()
 
-    save_figure(plt, name="experiment3_figure.png")
+    save_figure(plt, name="figures/experiment3.png")
 
 
 def main():
     """Plot all figures"""
     debug_print_verbose('Generating Plots')
+
+    if not os.path.exists('figures'):
+        os.makedirs('figures')
+
     make_figure_8_plot('data/figure8_experiment.csv')
     make_experiment1_figure('data/experiment1.csv')
     make_experiment2_figure('data/experiment2.csv')
