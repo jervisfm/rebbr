@@ -11,7 +11,7 @@ SHOW_INTERACTIVE_PLOTS = False
 
 
 def deduplicate_xmark_ticks(xmark_ticks):
-    """Removes redundant ticks for the given xmark_ticks. """
+    """Remove redundant ticks for the given xmark_ticks."""
     # Use a set to deduplicate.
     xmark_ticks = sorted([x for x in set(xmark_ticks)])
     xmark_ticks.remove(25.0)
@@ -21,9 +21,10 @@ def deduplicate_xmark_ticks(xmark_ticks):
 
 
 def get_loss_percent_xmark_ticks(results):
-    """Returns a list of x mark ticks for loss rate.
+    """Return a list of x mark ticks for loss rate.
 
-    Results: this is a python dictionary of parsed bbr experiment results. """
+    Results: this is a python dictionary of parsed bbr experiment results.
+    """
     output = []
     for cc, value in results.iteritems():
         for loss in value['loss']:
@@ -67,7 +68,8 @@ def apply_axes_formatting(axes, xmark_ticks):
 def plot_legend(plt, ncol=2, fontsize=20):
     """Plot legend."""
     # Plot Graph legend
-    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), ncol=2, mode="expand", loc=3, fontsize=fontsize, borderaxespad=0.)
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), ncol=2,
+               mode="expand", loc=3, fontsize=fontsize, borderaxespad=0.)
     plt.tight_layout()
 
 
@@ -93,11 +95,10 @@ def save_figure(plt, name):
 
 
 def parse_results_csv(input_csv_file, include_predicate_fn=None):
-    """ Reads input csv file from bbr experiment and converts it into a python dictionary
-       convenient for plotting figures.
+    """Read input csv file from bbr experiment and converts it into a python dictionary convenient for plotting figures.
 
     input_csv_file: Input CSV file to read.
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
 
     include_predicate_fn: Optional. When present, it's a function called to determine
     whether current record should be included. Function is given a tuple of
@@ -107,7 +108,6 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
     Returns a result which an in-memory dictionary of format:
     CongestionControlAlgorithm -> {"loss": [...], "goodput": [...], "rtt" : [...], "bandwidth": [...] }
     """
-
     # Parse CSV File into in-memory result dictionary. Format is like:
     # CongestionControl -> {"loss": [], "goodput": [], ... }
     results = {}
@@ -116,12 +116,13 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
         # Skip header row
         reader.next()
 
-        for (cc, loss, goodput, rtt, bandwidth) in reader:
+        for (cc, loss, goodput, rtt, capacity, specified_bw) in reader:
             loss_percent = float(loss) * 100
             goodput = float(goodput)
             rtt = float(rtt)
-            bandwidth = float(bandwidth)
-            normalized_goodput = goodput / bandwidth
+            capacity = float(capacity)
+            specified_bw = float(specified_bw)
+            normalized_goodput = goodput / capacity
             if not cc:
                 debug_print_warn(
                     "Skipping a log entry that's missing a Congestion Control Algorithm")
@@ -129,7 +130,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
 
             # Skip rows that are filt
             if include_predicate_fn:
-                if not include_predicate_fn(cc, loss, goodput, rtt, bandwidth):
+                if not include_predicate_fn(cc, loss, goodput, rtt, capacity, specified_bw):
                     continue
 
             if cc in results:
@@ -138,12 +139,13 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
             else:
                 # Create a new one.
                 value_dict = {"loss": [], "goodput": [],
-                              "normalized_goodput": [], "rtt": [], "bandwidth": []}
+                              "normalized_goodput": [], "rtt": [], "capacity": [], "specified_bw": []}
 
             value_dict['loss'].append(loss_percent)
             value_dict['goodput'].append(goodput)
             value_dict['rtt'].append(rtt)
-            value_dict['bandwidth'].append(bandwidth)
+            value_dict['capacity'].append(capacity)
+            value_dict['specified_bw'].append(specified_bw)
             value_dict['normalized_goodput'].append(normalized_goodput)
             results[cc] = value_dict
     return results
@@ -152,7 +154,7 @@ def parse_results_csv(input_csv_file, include_predicate_fn=None):
 def make_figure_8_plot(logfile):
     """Generate high quality plot of data to reproduce figure 8.
 
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
     """
     results = {}
     plt.figure()
@@ -184,12 +186,56 @@ def make_figure_8_plot(logfile):
 
     plt.xscale('log')
 
-
     plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
     apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
     plot_legend(plt)
 
     save_figure(plt, name="figures/figure8.png")
+
+
+def make_experiment4_figure(logfile):
+    """Generate high quality plot of data to reproduce figure 8.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
+    """
+    results = {}
+    cubic = {"loss": [], "goodput": []}
+    bbr = {"loss": [], "goodput": []}
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
+    cubic = results['cubic']
+    bbr = results['bbr']
+    debug_print_verbose("CUBIC: %s" % cubic)
+    debug_print_verbose("BBR: %s" % bbr)
+
+    matplotlib.rcParams.update({'figure.autolayout': True})
+
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
+             markersize=7, label='CUBIC')
+
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
+             markersize=7, label='BBR')
+
+    plt.xscale('log')
+
+    deduplicate_xmark_ticks(xmark_ticks)
+
+    apply_axes_formatting(axes, xmark_ticks)
+
+    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
+
+    plot_legend(plt)
+
+    save_figure(plt, name="experiment4.png")
 
 
 def make_experiment1_figure(logfile):
@@ -198,7 +244,7 @@ def make_experiment1_figure(logfile):
     Experiment 1 is looking at effects of various bandwithd between CUBIC and
     BBR.
 
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
     """
     results = {}
     plt.figure()
@@ -216,12 +262,11 @@ def make_experiment1_figure(logfile):
     cubic = results['cubic']
     bbr = results['bbr']
     debug_print_verbose("--- Generating figures for experiment 1")
-
     # Mahimahi bandwidth values can occasionally vary as much as +/- 0.01. See https://goo.gl/bX3b1U
     # To ensure filtering works properly, only include bandwidths common to
     # both.
-    cubic_bandwidth_filter_list = set(cubic['bandwidth'])
-    bbr_bandwidth_filter_list = set(bbr['bandwidth'])
+    cubic_bandwidth_filter_list = set(cubic['specified_bw'])
+    bbr_bandwidth_filter_list = set(bbr['specified_bw'])
     bandwidth_filter_list = cubic_bandwidth_filter_list.intersection(
         bbr_bandwidth_filter_list)
 
@@ -237,11 +282,11 @@ def make_experiment1_figure(logfile):
     # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
     # Need 5 colors  since we look at bandwidths: [0.01, 0.1, 1.0,  10.03,
     # 100.27 ]
-    cubic_bandwidth_colors = ['blue', 'purple', 'green', 'yellow', 'pink']
-    bbr_bandwidth_colors = ['red', 'brown', 'crimson', 'darkcyan', 'olive']
+    cubic_bandwidth_colors = ['#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#084594']
+    bbr_bandwidth_colors = ['#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#99000d']
     for index, bandwidth_filter in enumerate(bandwidth_filter_list):
-        def include_predicate_fn(congestion_control, loss, goodput, rtt, bandwidth):
-            return is_same_float(bandwidth, bandwidth_filter)
+        def include_predicate_fn(congestion_control, loss, goodput, rtt, capacity, specified_bw):
+            return is_same_float(specified_bw, bandwidth_filter)
 
         filtered_result = parse_results_csv(logfile, include_predicate_fn)
         debug_print_verbose("Filtered Results %s : %s" %
@@ -255,7 +300,7 @@ def make_experiment1_figure(logfile):
         bbr_color = bbr_bandwidth_colors[index]
 
         plt.plot(filtered_cubic['loss'], filtered_cubic['normalized_goodput'],
-                 color=cubic_color, linestyle='dotted', marker='o',
+                 color=cubic_color, linestyle='solid', marker='o',
                  markersize=7, label='CUBIC (%s Mbps)' % bandwidth_filter)
 
         plt.plot(filtered_bbr['loss'], filtered_bbr['normalized_goodput'], color=bbr_color,
@@ -274,10 +319,10 @@ def make_experiment1_figure(logfile):
 
 
 def make_experiment2_figure(logfile):
-    """Generate high quality plot of data to reproduce figure for experiment 2:
-    Looking at performance of different congestion control algorithms.
+    """Generate high quality plot of data to reproduce figure for experiment 2.
 
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    Looking at performance of different congestion control algorithms.
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
     """
     results = {}
     plt.figure()
@@ -346,7 +391,7 @@ def make_experiment3_figure(logfile):
     Experiment 3 is looking at effects of various RTTs values  between CUBIC and
     BBR.
 
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, capacity, specified_bw]
     """
     results = {}
     plt.figure()
@@ -371,7 +416,6 @@ def make_experiment3_figure(logfile):
     debug_print_verbose("RTT list: %s" % rtt_filter_list)
 
     matplotlib.rcParams.update({'figure.autolayout': True})
-
 
     # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
     # Need 5 colors  since we look at 5 RTT values (ms): [2 10 100 1000 10000]
@@ -460,11 +504,11 @@ def main():
     if not os.path.exists('figures'):
         os.makedirs('figures')
 
-    make_figure_8_plot('data/figure8_experiment.csv')
+    # make_figure_8_plot('data/figure8_experiment.csv')
     make_experiment1_figure('data/experiment1.csv')
-    make_experiment2_figure('data/experiment2.csv')
-    make_experiment3_figure('data/experiment3.csv')
-    make_experiment4_figure('data/experiment4.csv')
+    # make_experiment2_figure('data/experiment2.csv')
+    # make_experiment3_figure('data/experiment3.csv')
+    # make_experiment4_figure('data/experiment4.csv')
 
 
 if __name__ == '__main__':

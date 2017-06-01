@@ -234,7 +234,7 @@ def main():
     debug_print("Experiment complete!")
 
     # Print the output
-    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, capacity]])
+    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, capacity, bw]])
     stdout_print(results + "\n")
 
     # Also write to output file if it's set.
@@ -245,7 +245,7 @@ def main():
                 output.write(results + "\n")
         else:
             with open(output_file, 'a') as output:
-                header_line = "congestion_control, loss_rate, goodput_Mbps, rtt_ms, bandwidth_Mbps"
+                header_line = "congestion_control, loss_rate, goodput_Mbps, rtt_ms, bandwidth_Mbps, specified_bw_Mbps"
                 output.write(header_line + "\n")
                 output.write(results + "\n")
 
