@@ -9,7 +9,7 @@ set -e # Stop if any error occurs.
 
 LOSS_RATES="0.001 0.01 0.1 1 2 5 10 15 20 25 30 40 50"
 CONGESTION_CONTROL="cubic bbr bic vegas westwood reno"
-LOG_FILE=experiment2.csv
+LOG_FILE=data/experiment2.csv
 
 # Clear any existing data.
 rm -f $LOG_FILE
