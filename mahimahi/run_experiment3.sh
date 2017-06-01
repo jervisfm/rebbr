@@ -6,6 +6,8 @@
 set -x # Enable logging of executed commands.
 set -e # Stop if any error occurs.
 
+mkdir -p data
+
 LOSS_RATES="0.001 0.01 0.1 1 2 5 10 15 20 25 30 40 50"
 # Mahimahi min supported RTT is 2ms
 RTTS_MS="1 10 100 1000 2000"
