@@ -32,13 +32,13 @@ def get_loss_percent_xmark_ticks(results):
 
 
 def is_same_float(a, b, tolerance=1e-09):
-    """ Returns true if the two floats numbers (a,b) are almost equal."""
+    """Return true if the two floats numbers (a,b) are almost equal."""
     abs_diff = abs(a - b)
     return abs_diff < tolerance
 
 
 def apply_axes_formatting(axes, xmark_ticks):
-    """ Default axes formatting. """
+    """Format axes."""
     # For each loss percent, set a mark on x-axis.
     axes.set_xticks(xmark_ticks)
 
@@ -52,11 +52,22 @@ def apply_axes_formatting(axes, xmark_ticks):
     axes.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     axes.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
 
+    # Sort the labels
+    handles, labels = axes.get_legend_handles_labels()
+    debug_print_verbose(labels)
+    debug_print_verbose(handles)
+    import operator
+    hl = sorted(zip(handles, labels),
+                key=operator.itemgetter(1))
+    handles2, labels2 = zip(*hl)
 
-def plot_legend(plt):
-    """ Plots legend. """
+    axes.legend(handles2, labels2)
+
+
+def plot_legend(plt, ncol=2, fontsize=20):
+    """Plot legend."""
     # Plot Graph legend
-    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), ncol=2, mode="expand", loc=3, fontsize=20, borderaxespad=0.)
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), ncol=2, mode="expand", loc=3, fontsize=fontsize, borderaxespad=0.)
     plt.tight_layout()
 
 
@@ -144,6 +155,7 @@ def make_figure_8_plot(logfile):
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
     results = {}
+    plt.figure()
     cubic = {"loss": [], "goodput": []}
     bbr = {"loss": [], "goodput": []}
 
@@ -172,56 +184,12 @@ def make_figure_8_plot(logfile):
 
     plt.xscale('log')
 
-    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
 
     plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
-
+    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
     plot_legend(plt)
 
     save_figure(plt, name="figures/figure8.png")
-
-
-def make_experiment4_figure(logfile):
-    """Generate high quality plot of data to reproduce figure 8.
-
-    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
-    """
-    results = {}
-    cubic = {"loss": [], "goodput": []}
-    bbr = {"loss": [], "goodput": []}
-
-    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
-    # We prefer to use explicit keyword syntax to help code readability.
-
-    # Create a figure.
-    fig_width = 8
-    fig_height = 5
-    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
-
-    results = parse_results_csv(logfile)
-    xmark_ticks = get_loss_percent_xmark_ticks(results)
-    cubic = results['cubic']
-    bbr = results['bbr']
-    debug_print_verbose("CUBIC: %s" % cubic)
-    debug_print_verbose("BBR: %s" % bbr)
-
-    matplotlib.rcParams.update({'figure.autolayout': True})
-
-    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
-             markersize=7, label='CUBIC')
-
-    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
-             markersize=7, label='BBR')
-
-    plt.xscale('log')
-
-    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
-
-    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
-
-    plot_legend(plt)
-
-    save_figure(plt, name="figures/experiment4.png")
 
 
 def make_experiment1_figure(logfile):
@@ -233,7 +201,7 @@ def make_experiment1_figure(logfile):
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
     results = {}
-
+    plt.figure()
     # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
     # We prefer to use explicit keyword syntax to help code readability.
 
@@ -265,8 +233,6 @@ def make_experiment1_figure(logfile):
 
     matplotlib.rcParams.update({'figure.autolayout': True})
     plt.xscale('log')
-    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
-    apply_axes_formatting(axes, xmark_ticks)
 
     # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
     # Need 5 colors  since we look at bandwidths: [0.01, 0.1, 1.0,  10.03,
@@ -298,11 +264,11 @@ def make_experiment1_figure(logfile):
 
     plot_titles(plt,
                 xaxis="Loss Rate (%) - Log Scale",
-                yaxis="Normalized Goodput",
-                title="Comparisons CUBIC and BBR performance across various loss rates and bandwidths")
+                yaxis="Normalized Goodput")
 
-    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
-    plt.tight_layout()
+    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
+
+    plot_legend(plt, fontsize=10)
 
     save_figure(plt, name="figures/experiment1.png")
 
@@ -314,7 +280,7 @@ def make_experiment2_figure(logfile):
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
     results = {}
-
+    plt.figure()
     # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
     # We prefer to use explicit keyword syntax to help code readability.
 
@@ -365,16 +331,11 @@ def make_experiment2_figure(logfile):
 
     plt.xscale('log')
 
-    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
-
-    apply_axes_formatting(axes, xmark_ticks)
-
     plot_titles(plt, xaxis="Loss Rate (%) - Log Scale",
-                yaxis="Goodput (Mbps)",
-                title="Comparison Performance of different Congestion Control Algorithms over Lossy Links")
+                yaxis="Goodput (Mbps)")
 
-    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
-    plt.tight_layout()
+    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
+    plot_legend(plt, ncol=3, fontsize=10)
 
     save_figure(plt, name="figures/experiment2.png")
 
@@ -388,7 +349,7 @@ def make_experiment3_figure(logfile):
     The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
     """
     results = {}
-
+    plt.figure()
     # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
     # We prefer to use explicit keyword syntax to help code readability.
 
@@ -410,9 +371,7 @@ def make_experiment3_figure(logfile):
     debug_print_verbose("RTT list: %s" % rtt_filter_list)
 
     matplotlib.rcParams.update({'figure.autolayout': True})
-    plt.xscale('log')
-    xmark_ticks = deduplicate_xmark_ticks(xmark_ticks)
-    apply_axes_formatting(axes, xmark_ticks)
+
 
     # See: https://matplotlib.org/examples/color/named_colors.html for available colors.
     # Need 5 colors  since we look at 5 RTT values (ms): [2 10 100 1000 10000]
@@ -442,13 +401,56 @@ def make_experiment3_figure(logfile):
 
     plot_titles(plt,
                 xaxis="Loss Rate (%) - Log Scale",
-                yaxis="Goodput (Mbps)",
-                title="Comparisons CUBIC and BBR performance across various loss rates and RTT")
+                yaxis="Goodput (Mbps)")
 
-    plt.legend(loc='center left', fontsize=10, bbox_to_anchor=(1, 0.5))
-    plt.tight_layout()
+    plt.xscale('log')
+    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
+    plot_legend(plt, fontsize=10)
 
     save_figure(plt, name="figures/experiment3.png")
+
+
+def make_experiment4_figure(logfile):
+    """Generate high quality plot of data to reproduce figure 8.
+
+    The logfile is a CSV of the format [congestion_control, loss_rate, goodput, rtt, bandwidth]
+    """
+    results = {}
+    plt.figure()
+    cubic = {"loss": [], "goodput": []}
+    bbr = {"loss": [], "goodput": []}
+
+    # For available options on plot() method, see: https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot
+    # We prefer to use explicit keyword syntax to help code readability.
+
+    # Create a figure.
+    fig_width = 8
+    fig_height = 5
+    fig, axes = plt.subplots(figsize=(fig_width, fig_height))
+
+    results = parse_results_csv(logfile)
+    xmark_ticks = get_loss_percent_xmark_ticks(results)
+    cubic = results['cubic']
+    bbr = results['bbr']
+    debug_print_verbose("CUBIC: %s" % cubic)
+    debug_print_verbose("BBR: %s" % bbr)
+
+    matplotlib.rcParams.update({'figure.autolayout': True})
+
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
+             markersize=7, label='CUBIC')
+
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
+             markersize=7, label='BBR')
+
+    plt.xscale('log')
+
+    plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
+
+    apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
+    plot_legend(plt)
+
+    save_figure(plt, name="figures/experiment4.png")
 
 
 def main():
