@@ -5,6 +5,7 @@ from multiprocessing import Process
 import os
 import select
 import socket
+import sys
 import time
 
 
@@ -59,7 +60,7 @@ class Server(Process):
         except Exception as e:
             debug_print_error("Binding Error: " + str(e))
             self.outQ.put((None, e))
-            return
+            sys.exit(-1)
 
         s.listen(1)  # only have 1 connection
         debug_print(str(os.getppid()) + ":" + str(os.getpid()) +

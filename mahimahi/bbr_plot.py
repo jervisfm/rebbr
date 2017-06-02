@@ -176,12 +176,19 @@ def make_figure_8_plot(logfile):
     plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
              markersize=7, label='BBR')
 
+    # Plot ideal line of (1-lossRate * BW)
+    ideal = {}
+    ideal['loss'] = cubic['loss']
+    ideal['goodput'] = [(1 - (x / 100.0)) * 100 for x in ideal['loss']]
+
+    plt.plot(ideal['loss'], ideal['goodput'], color='black', linestyle='solid', label='ideal')
+
     plt.xscale('log')
 
     plot_titles(plt, xaxis="Loss Rate (%) - Log Scale", yaxis="Goodput (Mbps)")
 
     apply_axes_formatting(axes, deduplicate_xmark_ticks(xmark_ticks))
-    plot_legend(plt, axes)
+    plot_legend(plt, axes, ncol=3)
 
     save_figure(plt, name="figures/figure8.png")
 
