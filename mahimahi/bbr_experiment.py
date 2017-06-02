@@ -173,16 +173,11 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
                                 "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
                                 str(buffersize)]
 
-    subcommand = ' '.join(
-        ["stdbuf", "-o0", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+    subcommand = ["--", "python", "-c", "from client import run_client; run_client" + client_args]
+    full_command = command + subcommand
     debug_print_verbose(str(command) + " " + str(subcommand))
     try:
-        p = subprocess.Popen(command, stdin=subprocess.PIPE)
-        out, err = p.communicate(str(subcommand) + '\nexit')
-        if out:
-            debug_print_verbose(out)
-        if err:
-            debug_print_error(err)
+        subprocess.check_call(full_command, stderr=subprocess.STDOUT)
     except Exception as e:
         debug_print_error("Subprocess call error: " + str(e))
         sys.exit(-1)
