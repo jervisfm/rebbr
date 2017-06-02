@@ -9,7 +9,7 @@ echo "We need sudo so you'll be prompted for your password"
 
 CONGESTION_CONTROL="bbr bic vegas westwood reno cubic"
 
-for cc in $CONGESTION_CONTROL; do    
+for cc in $CONGESTION_CONTROL; do
   echo "Initializing $cc"
   sudo sysctl -w net.ipv4.tcp_congestion_control=$cc
 done

@@ -12,7 +12,6 @@ sudo apt-get update
 sudo apt-get install -y python-pip
 
 echo "Installing Python TK for graph plotting"
-sudo apt-get update
 sudo apt-get install -y python-tk
 pip install matplotlib
 

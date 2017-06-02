@@ -5,6 +5,8 @@ set -e # Stop if any error occurs.
 
 # This script simple runs a handful of experiments.
 
+./initialize_congestion_control.sh
+
 # Generate all the needed data.
 ./run_figure8_experiment.sh $@
 ./run_experiment1.sh $@
