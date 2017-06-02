@@ -34,6 +34,8 @@ def run_server(q, e, cc, port=5050, size=1024):
     """Run the server continuously."""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    timeout_secs = 120
+    s.settimeout(timeout_secs)
     try:
         s.bind(('', port))
     except socket.error:
@@ -43,8 +45,12 @@ def run_server(q, e, cc, port=5050, size=1024):
     s.listen(1)  # only have 1 connection
     debug_print("Awaiting connection on port %d" % port)
 
-    conn, _ = s.accept()
-    debug_print("Accepted connection")
-    _handle_connection(q, e, conn, size, cc)
+    try:
+        conn, _ = s.accept()
+        debug_print("Accepted connection")
+        _handle_connection(q, e, conn, size, cc)
+    except socket.timeout:
+        debug_print_error("Client failed to connect within timeout secs: %d" % timeout_secs)
+
     s.close()
     debug_print("Shutdown server")
