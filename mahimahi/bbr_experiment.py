@@ -173,6 +173,7 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
     # As a minimum, provide a 10-packet buffer.
     buffersize = max(int(rtt * ((throughput * 1e6) / 8.0) / 1000.0), 15000)
     debug_print_verbose("Buffersize: " + str(buffersize))
+
     if not headless:
         if trace_up and trace_down:
             command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
@@ -227,6 +228,7 @@ def main():
     server_q = Queue()
     e = Event()
     server_proc = Server(server_q, e, cc, port, size)
+
     # Start client and wait for it to finish.
     if uplink_trace is None and downlink_trace is None:
         client_proc = Process(target=_run_experiment,
@@ -236,6 +238,7 @@ def main():
                               args=(loss, port, cc, rtt, bw, uplink_trace, downlink_trace))
 
     server_proc.start()
+    # Wait a little to give server time to start up.
     time.sleep(2)
     _wait_for_server_start(port)
     client_proc.start()
@@ -252,7 +255,7 @@ def main():
 
     debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()))
     # Wait for server to shutdown, upto some timeout.
-    server_proc.join()
+    server_proc.join(10)
     # Check for errors from the server
     debug_print_verbose("Run complete.")
     while(not server_q.empty()):
@@ -262,6 +265,7 @@ def main():
         debug_print_verbose(result)
 
     server_q.close()
+
     e.clear()
     (capacity, goodput, q_delay, s_delay) = _parse_mahimahi_log()
     debug_print("Experiment complete!")
