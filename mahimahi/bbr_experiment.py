@@ -226,7 +226,7 @@ def main():
 
     debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()))
     # Wait for server to shutdown, upto some timeout.
-    server_proc.join(timeout=6)
+    server_proc.join(timeout=5)
     debug_print_verbose(
         "Run complete. Server Estimated Goodput: " + str(q.get()))
     q.close()
