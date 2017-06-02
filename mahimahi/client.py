@@ -15,7 +15,7 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.setsockopt(socket.IPPROTO_TCP, TCP_CONGESTION, cong_control)
-    debug_print("Client Connecting to: " + str(address) + ":" + str(port))
+    debug_print(str(os.getppid()) + ":" + str(os.getpid()) + " Client Connecting to: " + str(address) + ":" + str(port))
     try:
         s.connect((address, port))
     except socket.error as msg:
@@ -24,7 +24,9 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
 
     debug_print_verbose("Connection Established.")
     # Generate a random message of SIZE a single time. Send this over and over.
-    msg = ''.join(random.choice(string.ascii_letters) for _ in range(size))
+    msg = ''.join(random.choice(string.ascii_lowercase) for _ in range(size))
+
+    debug_print_verbose(msg)
 
     msg_count = 1
     # It can take different amount of time  to send message depending on network
@@ -42,6 +44,6 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
         try:
             s.send(msg)
         except Exception as e:
-            debug_print_error("Exception: " + str(e))
+            debug_print_error("Socket Send Exception: " + str(e))
             return
         msg_count += 1

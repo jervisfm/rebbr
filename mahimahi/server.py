@@ -56,7 +56,7 @@ class Server(Process):
         try:
             s.bind(('', self.port))
         except Exception as e:
-            debug_print_error("bind error")
+            debug_print_error("Binding Error: " + str(e))
             self.outQ.put((None, e))
             return
 

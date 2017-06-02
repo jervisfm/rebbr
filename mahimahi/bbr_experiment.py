@@ -129,8 +129,7 @@ def _parse_mahimahi_log():
     # We just want the throutput information, which is stderr.
     debug_print_verbose("Parsing Mahimahi logs...")
     command = ("mm-throughput-graph 10 /tmp/mahimahi_log > /dev/null")
-    output = subprocess.check_output(
-        command, shell=True, stderr=subprocess.STDOUT)
+    output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
     output = output.split('\n')
     debug_print_verbose(output)
     capacity = float(output[0].split(' ')[2])
@@ -154,34 +153,38 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
     debug_print_verbose("Buffersize: " + str(buffersize))
     if not headless:
         if trace_up and trace_down:
-            command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
+            command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                                 "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize),
-                                "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                                str(buffersize)]
         else:
-            command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
+            command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                                 "mm-link", str(throughput) + "Mbps.up", str(throughput) +
                                 "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize),
-                                "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                                str(buffersize)]
     else:
         if trace_up and trace_down:
-            command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
+            command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                                 "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize),
-                                "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+                                str(buffersize)]
         else:
-            command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
+            command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
                                 "mm-link", str(throughput) + "Mbps.up", str(throughput) +
                                 "Mbps.down", "--once", "--uplink-log=/tmp/mahimahi_log",
                                 "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize),
-                                "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
-    debug_print_verbose(command)
+                                str(buffersize)]
+
+    subcommand = ' '.join(
+        ["stdbuf", "-o0", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
+    debug_print_verbose(str(command) + " " + str(subcommand))
     try:
-        subprocess.check_call(command, shell=True, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(command, stdin=subprocess.PIPE)
+        out, err = p.communicate(str(subcommand) + '\nexit')
+        if out:
+            debug_print_verbose(out)
+        if err:
+            debug_print_error(err)
     except Exception as e:
-        debug_print_error(e)
+        debug_print_error("Subprocess call error: " + str(e))
         sys.exit(-1)
 
 
@@ -204,9 +207,9 @@ def main():
         _generate_trace(Flags.parsed_args[Flags.TIME], bw)
 
     # Start the client and server
-    q = Queue()
+    server_q = Queue()
     e = Event()
-    server_proc = Server(q, e, cc, port, size)
+    server_proc = Server(server_q, e, cc, port, size)
     # Start client and wait for it to finish.
     if uplink_trace is None and downlink_trace is None:
         client_proc = Process(target=_run_experiment,
@@ -233,19 +236,20 @@ def main():
     server_proc.join()
     # Check for errors from the server
     debug_print_verbose("Run complete.")
-    while(not q.empty()):
-        result, exception = q.get()
+    while(not server_q.empty()):
+        result, exception = server_q.get()
         if exception:
             raise exception
         debug_print_verbose(result)
 
-    q.close()
+    server_q.close()
     e.clear()
     (capacity, goodput, q_delay, s_delay) = _parse_mahimahi_log()
     debug_print("Experiment complete!")
 
     # Print the output
-    results = ', '.join([str(x) for x in [cc, loss, goodput, rtt, capacity, bw]])
+    results = ', '.join([str(x)
+                         for x in [cc, loss, goodput, rtt, capacity, bw]])
     stdout_print(results + "\n")
 
     # Also write to output file if it's set.
@@ -264,7 +268,6 @@ def main():
         _clean_up_trace(bw)
 
     debug_print("Terminating driver.")
-
 
 if __name__ == '__main__':
     main()
