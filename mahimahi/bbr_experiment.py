@@ -19,6 +19,7 @@ import os
 from server import run_server
 import subprocess
 import sys
+import time
 
 EXIT_SUCCESS = 0
 
@@ -140,6 +141,25 @@ def _parse_mahimahi_log():
     return (capacity, goodput, q_delay, s_delay)
 
 
+def _is_server_listening(port):
+    """ Determine whether a server at the given port is listening. """
+    command = "netstat -tln | grep :%d" % port
+    result = subprocess.check_call(command, shell=True)
+    result = result.strip()
+    if len(result) > 0:
+        # Non empty output means found a listening server.
+        return True
+    else:
+        return False
+
+def _wait_for_server_start(port):
+    """ Waits until server at given port is running / listening for connections. """
+    while(not _is_server_listening(port)):
+        debug_print_verbose("Waiting for server start at port %d" % port)
+        time.sleep(2)
+    debug_print_verbose("Server started listening at port %d" % port)
+        
+
 def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace_down=None):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
@@ -207,6 +227,11 @@ def main():
     server_proc = Process(
         target=run_server, args=(q, e, cc, port, size))
     server_proc.start()
+
+    # Wait a little to give server time to start up.
+    time.sleep(2)
+    _wait_for_server_start(port)
+    
     # Start client and wait for it to finish.
     if uplink_trace is None and downlink_trace is None:
         client_proc = Process(target=_run_experiment,
