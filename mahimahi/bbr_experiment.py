@@ -177,6 +177,7 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
                                 str(buffersize),
                                 "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
 
+    debug_print("Executing Command: %s" command)
     subprocess.check_call(command, shell=True)
 
 
