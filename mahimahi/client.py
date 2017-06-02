@@ -21,11 +21,11 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     debug_print("Client Connecting to: " + str(address) + ":" + str(port))
     try:
         s.connect((address, port))
-        debug_print_verbose("Connection Established")
     except socket.error as msg:
         debug_print_error("Cannot Connect: " + str(msg))
         sys.exit(-1)
 
+    debug_print_verbose("Connection Established.")
     # Generate a random message of SIZE a single time. Send this over and over.
     msg = ''.join(random.choice(string.ascii_letters) for _ in range(size))
 

@@ -177,8 +177,12 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
                                 "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
                                 str(buffersize),
                                 "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
-
-    subprocess.check_call(command, shell=True, stderr=subprocess.STDOUT)
+    debug_print_verbose(command)
+    try:
+        subprocess.check_call(command, shell=True, stderr=subprocess.STDOUT)
+    except Exception as e:
+        debug_print_error(e)
+        sys.exit(-1)
 
 
 def main():
@@ -227,7 +231,7 @@ def main():
 
     debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()))
     # Wait for server to shutdown, upto some timeout.
-    server_proc.join(timeout=60)
+    server_proc.join(timeout=5)
     debug_print_verbose(
         "Run complete. Server Estimated Goodput: " + str(q.get()))
     q.close()

@@ -53,5 +53,6 @@ def run_server(q, e, cc, port=5050, size=1024):
     conn, _ = s.accept()
     debug_print("Server Accepted connection")
     _handle_connection(q, e, conn, size, cc)
+    s.shutdown()
     s.close()
     debug_print("Shutdown server")
