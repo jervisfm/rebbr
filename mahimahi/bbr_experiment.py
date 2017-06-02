@@ -144,7 +144,7 @@ def _parse_mahimahi_log():
 def _is_server_listening(port):
     """ Determine whether a server at the given port is listening. """
     command = "netstat -tln | grep :%d" % port
-    result = subprocess.check_call(command, shell=True)
+    result = subprocess.check_output(command, shell=True)
     result = result.strip()
     if len(result) > 0:
         # Non empty output means found a listening server.
