@@ -16,7 +16,7 @@ import argparse
 from bbr_logging import debug_print, debug_print_verbose, debug_print_error, stdout_print
 from multiprocessing import Process, Queue, Event
 import os
-from server import run_server
+from server import Server
 import subprocess
 import sys
 
@@ -206,8 +206,7 @@ def main():
     # Start the client and server
     q = Queue()
     e = Event()
-    server_proc = Process(
-        target=run_server, args=(q, e, cc, port, size))
+    server_proc = Server(q, e, cc, port, size)
     # Start client and wait for it to finish.
     if uplink_trace is None and downlink_trace is None:
         client_proc = Process(target=_run_experiment,
@@ -231,9 +230,15 @@ def main():
 
     debug_print_verbose("Is Server Alive? %s" % (server_proc.is_alive()))
     # Wait for server to shutdown, upto some timeout.
-    server_proc.join(timeout=5)
-    debug_print_verbose(
-        "Run complete. Server Estimated Goodput: " + str(q.get()))
+    server_proc.join()
+    # Check for errors from the server
+    debug_print_verbose("Run complete.")
+    while(not q.empty()):
+        result, exception = q.get()
+        if exception:
+            raise exception
+        debug_print_verbose(result)
+
     q.close()
     e.clear()
     (capacity, goodput, q_delay, s_delay) = _parse_mahimahi_log()
