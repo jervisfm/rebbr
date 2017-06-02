@@ -150,6 +150,8 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
     headless = Flags.parsed_args[Flags.HEADLESS]
 
     buffersize = int(rtt * ((throughput * 1e6) / 8) / 1000)
+    # To get reasonable performance on slow links set a floor on the buffer size
+    buffersize = max(buffersize, 30 * 1024)
     debug_print_verbose(buffersize)
     if not headless:
         if trace_up and trace_down:
