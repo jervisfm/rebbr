@@ -18,12 +18,12 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.setsockopt(socket.IPPROTO_TCP, TCP_CONGESTION, cong_control)
-    debug_print(address)
+    debug_print("Client Connecting to: " + str(address) + ":" + str(port))
     try:
         s.connect((address, port))
-        debug_print_verbose("connection established")
+        debug_print_verbose("Connection Established")
     except socket.error as msg:
-        debug_print_error("cannot connect: " + str(msg))
+        debug_print_error("Cannot Connect: " + str(msg))
         sys.exit(-1)
 
     # Generate a random message of SIZE a single time. Send this over and over.

@@ -41,10 +41,10 @@ def run_server(q, e, cc, port=5050, size=1024):
         sys.exit(-1)
 
     s.listen(1)  # only have 1 connection
-    debug_print("Awaiting connection on port %d" % port)
+    debug_print("Server Awaiting connection on port %d" % port)
 
     conn, _ = s.accept()
-    debug_print("Accepted connection")
+    debug_print("Server Accepted connection")
     _handle_connection(q, e, conn, size, cc)
     s.close()
     debug_print("Shutdown server")

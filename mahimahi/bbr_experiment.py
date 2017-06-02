@@ -143,14 +143,15 @@ def _parse_mahimahi_log():
 def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace_down=None):
     """Run a single throughput experiment with the given loss rate."""
     debug_print("Running experiment [loss = " +
-                str(loss) + ", cong_ctrl = " + str(cong_ctrl) + "]")
+                str(loss) + ", cong_ctrl = " + str(cong_ctrl) + ", rtt = " + str(rtt) + ", bw = " + str(throughput) + "]")
 
     client_args = "(\'" + str(cong_ctrl) + "\')"
 
     headless = Flags.parsed_args[Flags.HEADLESS]
 
-    buffersize = int(rtt * ((throughput * 1e6) / 8) / 1000)
-    debug_print_verbose(buffersize)
+    # As a minimum, provide a 10-packet buffer.
+    buffersize = max(int(rtt * ((throughput * 1e6) / 8.0) / 1000.0), 15000)
+    debug_print_verbose("Buffersize: " + str(buffersize))
     if not headless:
         if trace_up and trace_down:
             command = ' '.join(["mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
