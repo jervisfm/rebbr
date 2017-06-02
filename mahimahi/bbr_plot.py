@@ -295,22 +295,22 @@ def make_experiment2_figure(logfile):
     matplotlib.rcParams.update({'figure.autolayout': True})
 
     # Plot the results of the different congestion control algorithms
-    plt.plot(cubic['loss'], cubic['goodput'], color='#1b9e77', linestyle='solid', marker='s',
+    plt.plot(cubic['loss'], cubic['goodput'], color='blue', linestyle='solid', marker='o',
              markersize=7, label='CUBIC')
 
-    plt.plot(bbr['loss'], bbr['goodput'], color='#d95f02', linestyle='solid', marker='x',
+    plt.plot(bbr['loss'], bbr['goodput'], color='red', linestyle='solid', marker='x',
              markersize=7, label='BBR')
 
-    plt.plot(bic['loss'], bic['goodput'], color='#7570b3', linestyle='solid', marker='.',
+    plt.plot(bic['loss'], bic['goodput'], color='#addd8e', linestyle='solid', marker='.',
              markersize=7, label='BIC')
 
-    plt.plot(vegas['loss'], vegas['goodput'], color='#e7298a', linestyle='solid', marker='.',
+    plt.plot(vegas['loss'], vegas['goodput'], color='#78c679', linestyle='solid', marker='.',
              markersize=7, label='VEGAS')
 
-    plt.plot(westwood['loss'], westwood['goodput'], color='#66a61e', linestyle='solid', marker='.',
+    plt.plot(westwood['loss'], westwood['goodput'], color='#31a354', linestyle='solid', marker='.',
              markersize=7, label='WESTWOOD')
 
-    plt.plot(reno['loss'], reno['goodput'], color='#e6ab02', linestyle='solid', marker='.',
+    plt.plot(reno['loss'], reno['goodput'], color='#006837', linestyle='solid', marker='.',
              markersize=7, label='RENO')
 
     plt.xscale('log')
