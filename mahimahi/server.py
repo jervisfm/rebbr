@@ -12,7 +12,14 @@ def _handle_connection(q, e, conn, size, cc):
     start_time = time.time()
     conn.setblocking(0)  # set to non-blocking
     timeout_in_seconds = 1.0
+    last_log_time_secs = time.time()
+    log_interval_secs = 5
     while not e.is_set():
+        time_now_secs = time.time()
+        delta_secs = time_now_secs - last_log_time_secs
+        if (delta_secs > log_interval_secs):
+            debug_print_verbose("Server Heartbeat. e.is_set()" % e.is_set())
+            last_log_time_secs = time_now_secs
         ready = select.select([conn], [], [], timeout_in_seconds)
         if ready[0]:
             # Only read the data if there is data to receive.

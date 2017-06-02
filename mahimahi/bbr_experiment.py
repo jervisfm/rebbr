@@ -178,7 +178,7 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
                                 str(buffersize),
                                 "--", "python", "-c", "\"from client import run_client; run_client" + client_args + "\""])
 
-    subprocess.check_call(command, shell=True)
+    subprocess.check_call(command, shell=True, stderr=subprocess.STDOUT)
 
 
 def main():
@@ -204,7 +204,6 @@ def main():
     e = Event()
     server_proc = Process(
         target=run_server, args=(q, e, cc, port, size))
-    server_proc.start()
     # Start client and wait for it to finish.
     if uplink_trace is None and downlink_trace is None:
         client_proc = Process(target=_run_experiment,
@@ -212,6 +211,8 @@ def main():
     else:
         client_proc = Process(target=_run_experiment,
                               args=(loss, port, cc, rtt, bw, uplink_trace, downlink_trace))
+
+    server_proc.start()
     client_proc.start()
     client_proc.join()
     # Handle errors starting up the server.
