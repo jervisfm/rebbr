@@ -31,7 +31,7 @@ class Server(Process):
             time_now_secs = time.time()
             delta_secs = time_now_secs - last_log_time_secs
             if (delta_secs > log_interval_secs):
-                debug_print_verbose("Server Heartbeat. e.is_set()" % self.e.is_set())
+                debug_print_verbose("Server Heartbeat. e.is_set()? %s" % self.e.is_set())
                 last_log_time_secs = time_now_secs
             ready = select.select([conn], [], [], timeout_in_seconds)
             if ready[0]:
