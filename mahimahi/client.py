@@ -9,11 +9,9 @@ import string
 import time
 
 
-TCP_CONGESTION = 13
-
-
 def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE") or "127.0.0.1"), port=5050):
     """Run the client."""
+    TCP_CONGESTION = 13
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.setsockopt(socket.IPPROTO_TCP, TCP_CONGESTION, cong_control)
