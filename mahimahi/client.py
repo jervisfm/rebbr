@@ -6,28 +6,27 @@ import os
 import random
 import socket
 import string
-import sys
 import time
-
-
-TCP_CONGESTION = 13
 
 
 def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE") or "127.0.0.1"), port=5050):
     """Run the client."""
+    TCP_CONGESTION = 13
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.setsockopt(socket.IPPROTO_TCP, TCP_CONGESTION, cong_control)
-    debug_print(address)
+    debug_print(str(os.getppid()) + ":" + str(os.getpid()) + " Client Connecting to: " + str(address) + ":" + str(port))
     try:
         s.connect((address, port))
-        debug_print_verbose("connection established")
     except socket.error as msg:
-        debug_print_error("cannot connect: " + str(msg))
-        sys.exit(-1)
+        debug_print_error("Cannot Connect: " + str(msg))
+        return
 
+    debug_print_verbose("Connection Established.")
     # Generate a random message of SIZE a single time. Send this over and over.
-    msg = ''.join(random.choice(string.ascii_letters) for _ in range(size))
+    msg = ''.join(random.choice(string.ascii_lowercase) for _ in range(size))
+
+    debug_print_verbose(msg)
 
     msg_count = 1
     # It can take different amount of time  to send message depending on network
@@ -41,5 +40,9 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
         if (delta_secs > log_interval_secs):
             debug_print_verbose("Sending Message #%d" % msg_count)
             last_log_time_secs = time_now_secs
-        s.send(msg)
+        try:
+            s.send(msg)
+        except Exception as e:
+            debug_print_error("Socket Send Exception: " + str(e))
+            return
         msg_count += 1

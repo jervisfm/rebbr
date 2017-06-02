@@ -1,56 +1,73 @@
 #!/usr/bin/python
 """Simple Python Server."""
 from bbr_logging import debug_print, debug_print_error, debug_print_verbose
+from multiprocessing import Process
+import os
 import select
 import socket
-import sys
 import time
 
 
-def _handle_connection(q, e, conn, size, cc):
-    num_msg = 0
-    start_time = time.time()
-    conn.setblocking(0)  # set to non-blocking
-    timeout_in_seconds = 1.0
-    while not e.is_set():
-        ready = select.select([conn], [], [], timeout_in_seconds)
-        if ready[0]:
-            # Only read the data if there is data to receive.
-            conn.recv(size)
-        num_msg += 1
+class Server(Process):
+    """Server class that simply receives data."""
 
-    # Once the event is set, break out
-    elapsed_time = time.time() - start_time
-    debug_print_verbose("Num msg: " + str(num_msg))
-    debug_print_verbose("Size: " + str(size) + " bytes")
-    debug_print_verbose("Time: " + str(elapsed_time))
-    goodput = (num_msg * size * 8) / elapsed_time / 1e6
+    def __init__(self, outputQueue, event, cc, port=5050, size=1024):
+        """Initialize server with input and output Queues."""
+        super(Server, self).__init__()
+        self.outQ = outputQueue
+        self.e = event
+        self.cc = cc
+        self.port = port
+        self.size = size
 
-    # Send the Goodput back to the master
-    q.put(str(goodput))
+    def _handle_connection(self, conn):
+        num_msg = 0
+        start_time = time.time()
+        conn.setblocking(0)  # set to non-blocking
+        timeout_in_seconds = 1.0
+        last_log_time_secs = time.time()
+        log_interval_secs = 5
+        while not self.e.is_set():
+            time_now_secs = time.time()
+            delta_secs = time_now_secs - last_log_time_secs
+            if (delta_secs > log_interval_secs):
+                debug_print_verbose("Server Heartbeat. e.is_set()" % self.e.is_set())
+                last_log_time_secs = time_now_secs
+            ready = select.select([conn], [], [], timeout_in_seconds)
+            if ready[0]:
+                # Only read the data if there is data to receive.
+                conn.recv(self.size)
+            num_msg += 1
 
+        # Once the event is set, break out
+        elapsed_time = time.time() - start_time
+        debug_print_verbose("Num msg: " + str(num_msg))
+        debug_print_verbose("Size: " + str(self.size) + " bytes")
+        debug_print_verbose("Time: " + str(elapsed_time))
+        goodput = (num_msg * self.size * 8) / elapsed_time / 1e6
 
-def run_server(q, e, cc, port=5050, size=1024):
-    """Run the server continuously."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    timeout_secs = 120
-    s.settimeout(timeout_secs)
-    try:
-        s.bind(('', port))
-    except socket.error:
-        debug_print_error("bind error")
-        sys.exit(-1)
+        # Send the Goodput back to the master
+        self.outQ.put(("Estimated goodput: " + str(goodput), None))
 
-    s.listen(1)  # only have 1 connection
-    debug_print("Awaiting connection on port %d" % port)
+    def run(self):
+        """Run the server continuously."""
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.settimeout(120)
+        try:
+            s.bind(('', self.port))
+        except Exception as e:
+            debug_print_error("Binding Error: " + str(e))
+            self.outQ.put((None, e))
+            return
 
-    try:
+        s.listen(1)  # only have 1 connection
+        debug_print(str(os.getppid()) + ":" + str(os.getpid()) +
+                    " Server Awaiting connection on port %d" % self.port)
+
         conn, _ = s.accept()
-        debug_print("Accepted connection")
-        _handle_connection(q, e, conn, size, cc)
-    except socket.timeout:
-        debug_print_error("Client failed to connect within timeout secs: %d" % timeout_secs)
-
-    s.close()
-    debug_print("Shutdown server")
+        debug_print("Server Accepted connection")
+        self._handle_connection(conn)
+        s.shutdown(socket.SHUT_RDWR)
+        s.close()
+        debug_print("Shutdown server")
