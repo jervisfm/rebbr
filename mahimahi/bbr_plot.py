@@ -181,7 +181,7 @@ def make_figure_8_plot(logfile):
     ideal['loss'] = cubic['loss']
     ideal['goodput'] = [(1 - (x / 100.0)) * 100 for x in ideal['loss']]
 
-    plt.plot(ideal['loss'], ideal['goodput'], color='black', linestyle='solid', label='ideal')
+    plt.plot(ideal['loss'], ideal['goodput'], color='black', linestyle='dotted', label='ideal')
 
     plt.xscale('log')
 
