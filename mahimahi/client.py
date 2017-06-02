@@ -6,7 +6,6 @@ import os
 import random
 import socket
 import string
-import sys
 import time
 
 
@@ -23,7 +22,7 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
         s.connect((address, port))
     except socket.error as msg:
         debug_print_error("Cannot Connect: " + str(msg))
-        sys.exit(-1)
+        return
 
     debug_print_verbose("Connection Established.")
     # Generate a random message of SIZE a single time. Send this over and over.
@@ -42,5 +41,9 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
         if (delta_secs > log_interval_secs):
             debug_print_verbose("Sending Message #%d" % msg_count)
             last_log_time_secs = time_now_secs
-        s.send(msg)
+        try:
+            s.send(msg)
+        except Exception as e:
+            debug_print_error("Exception: " + str(e))
+            return
         msg_count += 1

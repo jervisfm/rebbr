@@ -5,7 +5,6 @@ from multiprocessing import Process
 import os
 import select
 import socket
-import sys
 import time
 
 
