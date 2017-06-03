@@ -1,6 +1,6 @@
 # ReBBR: Reproducing BBR Performance on Lossy Networks
 
-[![link_to_blog](https://img.shields.io/badge/blog-3%20June%202017-green.svg)](https://reproducingnetworkresearch.wordpress.com/)
+[![link_to_blog](https://img.shields.io/badge/blogpost-3%20June%202017-green.svg)](https://reproducingnetworkresearch.wordpress.com/)
 [![link_to_paper](https://img.shields.io/badge/original-paper-blue.svg)](https://research.google.com/pubs/pub45646.html)
 
 ## Introduction
