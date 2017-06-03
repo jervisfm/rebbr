@@ -57,7 +57,8 @@ def _clean_up_trace(throughput):
 
 def _generate_trace(seconds, throughput):
     """Generate a <throughput>Mbps trace that lasts for the specified seconds."""
-    debug_print("Creating " + str(seconds) + " sec trace @: " + str(throughput) + "Mbps")
+    debug_print("Creating " + str(seconds) +
+                " sec trace @: " + str(throughput) + "Mbps")
     bits_per_packet = 12000
     low_avg = int((throughput) / (bits_per_packet / 1000))
     high_avg = low_avg + 1
@@ -130,7 +131,8 @@ def _parse_mahimahi_log():
     # We just want the throutput information, which is stderr.
     debug_print_verbose("Parsing Mahimahi logs...")
     command = ("mm-throughput-graph 10 /tmp/mahimahi_log > /dev/null")
-    output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+    output = subprocess.check_output(
+        command, shell=True, stderr=subprocess.STDOUT)
     output = output.split('\n')
     debug_print_verbose(output)
     capacity = float(output[0].split(' ')[2])
@@ -169,33 +171,26 @@ def _run_experiment(loss, port, cong_ctrl, rtt, throughput, trace_up=None, trace
 
     headless = Flags.parsed_args[Flags.HEADLESS]
 
-    # As a minimum, provide a 10-packet buffer.
-    buffersize = max(int(rtt * ((throughput * 1e6) / 8.0) / 1000.0), 15000)
-    debug_print_verbose("Buffersize: " + str(buffersize))
-
+    # We are using an infinite buffer size.
     if not headless:
         if trace_up and trace_down:
             command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
-                                "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize)]
+                       "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once"]
         else:
             command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
-                                "mm-link", str(throughput) + "Mbps.up", str(throughput) +
-                                "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize)]
+                       "mm-link", str(throughput) + "Mbps.up", str(throughput) +
+                       "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--meter-uplink", "--once"]
     else:
         if trace_up and trace_down:
             command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
-                                "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--once", "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize)]
+                       "mm-link", str(trace_up), str(trace_down), "--uplink-log=/tmp/mahimahi_log", "--once"]
         else:
             command = ["stdbuf", "-o0", "mm-delay", str(rtt / 2), "mm-loss", "uplink", str(loss),
-                                "mm-link", str(throughput) + "Mbps.up", str(throughput) +
-                                "Mbps.down", "--once", "--uplink-log=/tmp/mahimahi_log",
-                                "--uplink-queue=droptail", "--uplink-queue-args=bytes=" +
-                                str(buffersize)]
+                       "mm-link", str(throughput) + "Mbps.up", str(throughput) +
+                       "Mbps.down", "--uplink-log=/tmp/mahimahi_log", "--once"]
 
-    subcommand = ["--", "python", "-c", "from client import run_client; run_client" + client_args]
+    subcommand = ["--", "python", "-c",
+                  "from client import run_client; run_client" + client_args]
     full_command = command + subcommand
     debug_print_verbose(str(command) + " " + str(subcommand))
     try:
@@ -290,6 +285,7 @@ def main():
         _clean_up_trace(bw)
 
     debug_print("Terminating driver.")
+
 
 if __name__ == '__main__':
     main()

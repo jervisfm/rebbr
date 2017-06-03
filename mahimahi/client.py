@@ -33,12 +33,12 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     # configurations. Thus, log progress based on time intervals.
     last_log_time_secs = time.time()
     log_interval_secs = 5
-    debug_print_verbose("Client Starting Sending Messages...")
+    debug_print("Client Starting Sending Messages...")
     while True:
         time_now_secs = time.time()
         delta_secs = time_now_secs - last_log_time_secs
         if (delta_secs > log_interval_secs):
-            debug_print_verbose("Sending Message #%d" % msg_count)
+            debug_print("Sending Message #%d" % msg_count)
             last_log_time_secs = time_now_secs
         try:
             s.send(msg)
