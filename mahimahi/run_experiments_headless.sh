@@ -8,5 +8,5 @@ set -e # Stop if any error occurs.
 ./run_experiments.sh --headless
 
 # Then, serve the content on http
-echo "Open a browser and navigate to http://<ip_address>/bbr/mahimahi/data/ to view the figures."
+echo "Open a browser and navigate to http://<ip_address>/figures/ to view the figures."
 sudo python -m SimpleHTTPServer 80

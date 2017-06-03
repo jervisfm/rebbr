@@ -3,6 +3,8 @@
 from bbr_logging import debug_print, debug_print_verbose, debug_print_error, debug_print_warn
 import csv
 import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import os
 
