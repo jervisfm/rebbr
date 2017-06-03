@@ -57,8 +57,7 @@ def _clean_up_trace(throughput):
 
 def _generate_trace(seconds, throughput):
     """Generate a <throughput>Mbps trace that lasts for the specified seconds."""
-    debug_print_info("Creating " + str(seconds) +
-                        " sec trace @: " + str(throughput) + "Mbps")
+    debug_print("Creating " + str(seconds) + " sec trace @: " + str(throughput) + "Mbps")
     bits_per_packet = 12000
     low_avg = int((throughput) / (bits_per_packet / 1000))
     high_avg = low_avg + 1
