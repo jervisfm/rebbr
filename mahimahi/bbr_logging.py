@@ -11,7 +11,7 @@ DEBUG_LOG_INFO = 2
 DEBUG_LOG_VERBOSE = 3
 
 # Only output messages upto the Info Level by default.
-DEBUG_LOG_LEVEL = DEBUG_LOG_VERBOSE
+DEBUG_LOG_LEVEL = DEBUG_LOG_INFO
 
 
 def debug_print(msg):

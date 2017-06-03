@@ -63,8 +63,7 @@ class Server(Process):
             sys.exit(-1)
 
         s.listen(1)  # only have 1 connection
-        debug_print(str(os.getppid()) + ":" + str(os.getpid()) +
-                    " Server Awaiting connection on port %d" % self.port)
+        debug_print("Server awaiting connection on port %d" % self.port)
 
         conn, _ = s.accept()
         debug_print("Server Accepted connection")
