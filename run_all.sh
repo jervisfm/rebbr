@@ -3,8 +3,9 @@
 set -x # Enable logging of executed commands.
 set -e # Stop if any error occurs.
 
+cd mahimahi
 # First, install all dependencies
-./mahimahi/init_deps.sh
+./init_deps.sh
 
 # This script simply runs all experiments with headless mode enabled.
-./mahimahi/run_experiments_headless.sh
+./run_experiments_headless.sh
