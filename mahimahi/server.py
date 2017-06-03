@@ -54,6 +54,7 @@ class Server(Process):
         """Run the server continuously."""
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 16777216)
         s.settimeout(120)
         try:
             s.bind(('', self.port))
