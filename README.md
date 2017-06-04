@@ -1,10 +1,10 @@
 # ReBBR: Reproducing BBR Performance on Lossy Networks
 
-[![link_to_blog](https://img.shields.io/badge/blogpost-3%20June%202017-green.svg)](https://reproducingnetworkresearch.wordpress.com/)
+[![link_to_blog](https://img.shields.io/badge/blogpost-4%20June%202017-green.svg)](https://reproducingnetworkresearch.wordpress.com/2017/06/04/rebbr)
 [![link_to_paper](https://img.shields.io/badge/original-paper-blue.svg)](https://research.google.com/pubs/pub45646.html)
 
 ## Introduction
-This is the code that was used to reproduce the BBR results described [in our blog post](https://reproducingnetworkresearch.wordpress.com/). Specifically, we target the BBR result that BBR significantly outperforms CUBIC over networks with non-negligable loss rates, summarized in Figure 8 of the [original paper](https://research.google.com/pubs/pub45646.html).
+This is the code that was used to reproduce the BBR results described [in our blog post](https://reproducingnetworkresearch.wordpress.com/2017/06/04/rebbr). Specifically, we target the BBR result that BBR significantly outperforms CUBIC over networks with non-negligable loss rates, summarized in Figure 8 of the [original paper](https://research.google.com/pubs/pub45646.html).
 
 
 ## Step-by-step Instructions
