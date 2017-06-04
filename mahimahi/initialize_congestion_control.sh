@@ -19,13 +19,13 @@ sudo sysctl -w net.ipv4.ip_forward=1
 
 
 echo "Increase maximum buffer sizes."
-sudo sysctl -w net.core.rmem_max=8388608
-sudo sysctl -w net.core.wmem_max=8388608
+sudo sysctl -w net.core.rmem_max=6553600
+sudo sysctl -w net.core.wmem_max=6553600
 sudo sysctl -w net.core.rmem_default=65536
 sudo sysctl -w net.core.wmem_default=65536
-sudo sysctl -w net.ipv4.tcp_rmem='4096 87380 8388608'
-sudo sysctl -w net.ipv4.tcp_wmem='4096 65536 8388608'
-sudo sysctl -w net.ipv4.tcp_mem='8388608 8388608 8388608'
+sudo sysctl -w net.ipv4.tcp_rmem='4096 87380 6553600'
+sudo sysctl -w net.ipv4.tcp_wmem='4096 65536 6553600'
+sudo sysctl -w net.ipv4.tcp_mem='6553600 6553600 6553600'
 sudo sysctl -w net.ipv4.route.flush=1
 
 echo "Initialization complete"
