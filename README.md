@@ -9,7 +9,7 @@ This is the code that was used to reproduce the BBR results described [in our bl
 
 ## Step-by-step Instructions
 In order to reproduce our results, you can follow the step by step instructions that follow.
-As an overview, we will be creating a virtual machine, installing a Linux kernel that includes BBR congestion control, installing [Mahimahi](http://mahimahi.mit.edu/) (a network emulator), and using it to run a series of experiments. This whole process should take about **TODO** hours.
+As an overview, we will be creating a virtual machine, installing a Linux kernel that includes BBR congestion control, installing [Mahimahi](http://mahimahi.mit.edu/) (a network emulator), and using it to run a series of experiments. This whole process to replicate our results should take about 8.5 hours.
 
 We provide instructions for running this experiment on Google Cloud, but you could follow
 the same instructions on any Ubuntu 16.04 machine, on a local VM for instance.
@@ -47,10 +47,10 @@ Next, we will install the necessary dependencies and prerequisites on our VM.
     ```
 5. Wait for the instance to restart, and reconnect to it via SSH.
 6. Verify that the kernel upgrade worked by running `uname -sr`. This should output `Linux 4.11.1-041101-generic`. If not, the kernel was not updated. You may need to rerun step 3 and reboot again.
-7. To install all dependencies and run all experiments, run `cd bbr && ./run_all.sh`. This will take approximately **TODO** hours. During this run, you will see some logging output printed to the console, which allows you to monitor which experiment is being run.
+7. To install all dependencies and run all experiments, run `cd bbr && ./run_all.sh`. This will take approximately 8.5 hours. During this run, you will see some logging output printed to the console, which allows you to monitor which experiment is being run.
 8. Finally, to view the experiment results, identify your VM-instance's _external_ IP address in the Google Cloud Console (e.g. 104.199.120.104). You will be able to browse the figures by opening your browers and navigating to `http://<external-ip>/figures/`. Note that this external ip is not static, so if you run the experiments again later, you will need to check for the current external ip address.
 
-You can identify your public IP address by running:
+You can also identify your VM public IP address by running:
 ```
 $ dig +short myip.opendns.com @resolver1.opendns.com
 ```
