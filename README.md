@@ -68,7 +68,7 @@ at varying loss rates.
 ### Experiment 1
 Experiment 1 looks at BBR and CUBIC performance over loss links acrossing various link speeds.
 
-TODO: Figure
+![rebbr_experiment1](mahimahi/figures/experiment1.png "ReBBR Experiment 1")
 
 ### Experiment 2
 Experiment 2 looks at how various Congestion Control Algorithms found in linux kernel behave
