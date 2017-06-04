@@ -15,7 +15,7 @@ def run_client(cong_control, size=1024, address=(os.environ.get("MAHIMAHI_BASE")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     s.setsockopt(socket.IPPROTO_TCP, TCP_CONGESTION, cong_control)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 16777216)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 8388608)
     debug_print("Client Connecting to: " + str(address) + ":" + str(port))
     try:
         s.connect((address, port))
