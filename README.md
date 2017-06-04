@@ -50,4 +50,9 @@ Next, we will install the necessary dependencies and prerequisites on our VM.
 7. To install all dependencies and run all experiments, run `cd bbr && ./run_all.sh`. This will take approximately **TODO** hours. During this run, you will see some logging output printed to the console, which allows you to monitor which experiment is being run.
 8. Finally, to view the experiment results, identify your VM-instance's _external_ IP address in the Google Cloud Console (e.g. 104.199.120.104). You will be able to browse the figures by opening your browers and navigating to `http://<external-ip>/bbr/mahimahi/data/`. Note that this external ip is not static, so if you run the experiments again later, you will need to check for the current external ip address.
 
+You can identify your public IP address by running:
+```
+$ dig +short myip.opendns.com @resolver1.opendns.com
+```
+
 Don't forget to shut down your Google Cloud instance when you are done!
