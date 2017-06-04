@@ -79,7 +79,8 @@ over various loss rates.
 ### Experiment 3
 Experiment 3 looks at impact of RTT on performance of CUBIC and BBR over various loss rates.
 
-TODO: Figure
+![rebbr_experiment3](mahimahi/figures/experiment3.png "ReBBR Experiment 3")
+
 
 ### Experiment 4
 Experiment 4 compares BBR and CUBIC performance over a cellular link trace with varying
