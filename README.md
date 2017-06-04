@@ -86,4 +86,4 @@ Experiment 3 looks at impact of RTT on performance of CUBIC and BBR over various
 Experiment 4 compares BBR and CUBIC performance over a cellular link trace with varying
 RTT and bandwidth captured from the Verizon network.
 
-TODO: Figure
+![rebbr_experiment4](mahimahi/figures/experiment4.png "ReBBR Experiment 4")
