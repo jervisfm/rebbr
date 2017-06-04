@@ -63,7 +63,7 @@ Don't forget to shut down your Google Cloud instance when you are done!
 This is our reproduction of figure 8 from original paper that looks at how CUBIC and BBR perform
 at varying loss rates.
 
-TODO: Figure
+![rebbr_figure8](figures/figure8.png "ReBBR Figure 8")
 
 ### Experiment 1
 Experiment 1 looks at BBR and CUBIC performance over loss links acrossing various link speeds.
