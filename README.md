@@ -71,12 +71,18 @@ Experiment 1 looks at BBR and CUBIC performance over loss links acrossing variou
 TODO: Figure
 
 ### Experiment 2
+Experiment 2 looks at how various Congestion Control Algorithms found in linux kernel behave
+over various loss rates.
 
 TODO: Figure
 
 ### Experiment 3
+Experiment 3 looks at impact of RTT on performance of CUBIC and BBR over various loss rates.
 
 TODO: Figure
 
 ### Experiment 4
+Experiment 4 compares BBR and CUBIC performance over a cellular link trace with varying
+RTT and bandwidth captured from the Verizon network.
+
 TODO: Figure
