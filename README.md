@@ -56,3 +56,27 @@ $ dig +short myip.opendns.com @resolver1.opendns.com
 ```
 
 Don't forget to shut down your Google Cloud instance when you are done!
+
+## Experiment Results
+
+### Figure 8
+This is our reproduction of figure 8 from original paper that looks at how CUBIC and BBR perform
+at varying loss rates.
+
+TODO: Figure
+
+### Experiment 1
+Experiment 1 looks at BBR and CUBIC performance over loss links acrossing various link speeds.
+
+TODO: Figure
+
+### Experiment 2
+
+TODO: Figure
+
+### Experiment 3
+
+TODO: Figure
+
+### Experiment 4
+TODO: Figure
