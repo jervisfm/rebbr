@@ -42,6 +42,11 @@ BBR vs. CUBIC throughput for 60-second flows on a 100Mbps/100-ms link with
 0.001% to 50% random loss.
 </small>
 
+NOTE:
+As BBR's loss rate approaches the ProbeBW peak gain, the probability of
+measuring a delivery rate of the true BtlBw drops sharply, causing the max
+filter to underestimate.
+
 ---
 
 ### Experimental Setup  
@@ -114,6 +119,9 @@ and different RTT values?
 NOTE:
 Performed on 30-second flows. Some of the variance for the low-throughput
 lines could be address by using smaller maximum buffer sizes.
+
+The Macroscopic Behavior of the TCP Congestion Avoidance Algorithm.
+BW < (MSS/RTT) * 1 / sqrt(p)
 
 +++
 #### Varying Round Trip Time
