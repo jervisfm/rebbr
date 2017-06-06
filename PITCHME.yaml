@@ -1,0 +1,6 @@
+# GitPitch Settings
+slide-number : true
+transition : none
+background-size : contain
+# vertical-center : false
+theme-override : assets/PITCHME.css
