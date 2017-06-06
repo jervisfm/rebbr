@@ -2,5 +2,6 @@
 slide-number : true
 transition : none
 background-size : contain
+theme : white
 # vertical-center : false
 theme-override : assets/PITCHME.css
