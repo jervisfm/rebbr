@@ -1,7 +1,7 @@
 # ReBBR: Reproducing BBR Performance on Lossy Networks
 
 [![link_to_blog](https://img.shields.io/badge/blogpost-5%20June%202017-orange.svg)](https://reproducingnetworkresearch.wordpress.com/2017/06/05/rebbr/)
-[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/jervisfm/rebbr/dev?grs=github&t=white)
+[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/jervisfm/rebbr/)
 [![link_to_paper](https://img.shields.io/badge/original-paper-blue.svg)](https://research.google.com/pubs/pub45646.html)
 
 ## Introduction
