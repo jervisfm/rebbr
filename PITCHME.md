@@ -49,6 +49,15 @@ filter to underestimate.
 
 ---
 
+### Questions to Answer
+
+1. Can we replicate Figure 8?
+2. How does Figure 8 look with other congestion control algorithms?
+3. How does bottleneck bandwidth or RTT affect the comparison?
+4. How does BBR compare with CUBIC on a cellular link?
+
+---
+
 ### Experimental Setup  
 - Ubuntu 16.04 LTS VM with [v4.11.1](http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.11.1/) of the Linux kernel
 - [Mahimahi](http://mahimahi.mit.edu/) Network Emulator
