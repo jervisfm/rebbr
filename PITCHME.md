@@ -73,6 +73,7 @@ filter to underestimate.
 ![Fig8](http://deliveryimages.acm.org/10.1145/3030000/3022184/vanjacobson8.png)
 
 +++
+#### Our Results
 
 ![our_fig_8](mahimahi/figures/figure8.png)
 
@@ -92,13 +93,6 @@ performance, which can result in ~2% penalty in throughput because BBR spends
 those portions of time with a minimal number of packets in flight.
 Differences in emulation: level of correlation of drops, or number of packets
 dropped at the same time (LRO/GRO settings).
-
----
-
-### Exploration Experiments
-- Comparing BBR to other TCP congestion control algorithms
-- Evaluating the effect of bottleneck bandwidth and round trip time
-- BBR vs. CUBIC on a Verizon LTE Trace
 
 ---
 
