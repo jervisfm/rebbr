@@ -19,7 +19,7 @@
 - Deployed in Google's B4 datacenter-to-datacenter high-speed WAN which uses
   commodity switches.
 
----?image=http://deliveryimages.acm.org/10.1145/3030000/3022184/vanjacobson1.png
+---?image=http://deliveryimages.acm.org/10.1145/3030000/3022184/vanjacobson1.png&size=auto 90%
 
 
 ---
@@ -152,7 +152,7 @@ Experiment using the 140-second Verizon LTE trace provided with Mahimahi.
 +++
 
 ![v-bw](mahimahi/figures/verizon-bw.png)
-
+cd ../
 +++
 
 ![v-delay](mahimahi/figures/verizon-delay.png)
