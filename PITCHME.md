@@ -38,7 +38,7 @@
 ![Fig8](http://deliveryimages.acm.org/10.1145/3030000/3022184/vanjacobson8.png)
 
 <small>
-BBR vs. CUBIC throughput for 60-second flows on a 100Mbps/100-ms link with
+BBR (green) vs. CUBIC (red) throughput for 60-second flows on a 100Mbps/100-ms link with
 0.001% to 50% random loss.
 </small>
 
@@ -71,6 +71,11 @@ filter to underestimate.
 ### Reproducing Figure 8
 
 ![Fig8](http://deliveryimages.acm.org/10.1145/3030000/3022184/vanjacobson8.png)
+
+NOTE:
+As BBR's loss rate approaches the ProbeBW peak gain, the probability of
+measuring a delivery rate of the true BtlBw drops sharply, causing the max
+filter to underestimate.
 
 +++
 #### Our Results
